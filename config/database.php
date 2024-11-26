@@ -2,7 +2,7 @@
 
 require_once __DIR__ . "/../lib/db.php";
 
-$db = new DB_CONNECTION();
+$db = DB_CONNECTION::getInstance();
 
 $sql = "
 CREATE TABLE IF NOT EXISTS agencies (
@@ -31,12 +31,13 @@ CREATE TABLE IF NOT EXISTS users (
     FOREIGN KEY (agencyId) REFERENCES agencies(agencyId)
 );
 ";
-if ($db->connect()) {
-    if (mysqli_multi_query($db->dbConnection, $sql)) {
+if ($db->getConnection()) {
+    if (mysqli_multi_query($db->getConnection(), $sql)) {
         echo "Tables created successfully!";
     } else {
-        echo "Error creating tables: " . mysqli_error($db->dbConnection);
+        echo "Error creating tables: " . mysqli_error($db->getConnection());
     }
+    $db->close();
 } else {
     echo "Connection failed: " . mysqli_connect_error();
 }
