@@ -8,27 +8,42 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
     $db = DB_CONNECTION::getInstance();
     if ($db->getConnection()) {
         try {
-            $findExistingUserStmt = $db->getConnection()->prepare("SELECT email,password from users WHERE email=?");
+            $findExistingUserStmt = $db->getConnection()->prepare("SELECT userId,password,role from users WHERE email=?");
             $findExistingUserStmt->bind_param("s", $email);
             $findExistingUserStmt->execute();
-            $findExistingUserStmt->bind_result($userEmail, $userPassword);
+            $findExistingUserStmt->bind_result($userId, $userPassword, $role);
 
             // fetch returns true if user exist 
             if ($findExistingUserStmt->fetch()) {
                 $passwordMatched = password_verify($password, $userPassword);
                 if ($passwordMatched) {
-                    echo "Login Successful";
+                    require_once __DIR__ . "/../../utils/JWT.php";
+                    $token = JWT::encode(array("userId" => $userId, "role" => $role));
+                    echo json_encode(array("message" => "Login Successful", "type" => "Success", "token" => $token));
+                    /**
+                     *  Verify token
+                     */
+                    // $decodedToken = JWT::decode($token);
+                    // if (isset($decodedToken["type"]) && $decodedToken["type"] === "Error") {
+                    //     http_response_code(401)
+                    //     echo json_encode($decodedToken);
+                    // } else {
+                    //     echo json_encode($decodedToken);
+                    // }
                 } else {
-                    echo "Incorrect password";
+                    http_response_code(401);
+                    echo json_encode(array("message" => "Invalid Credentials", "type" => "Error"));
                 }
             } else {
-                echo "User not found";
+                http_response_code(401);
+                echo json_encode(array("message" => "Invalid Credentials", "type" => "Error"));
             }
             $findExistingUserStmt->close();
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
         }
+        $db->close();
     } else {
         http_response_code(500);
         echo json_encode(array("message" => "Failed to connect to database", "type" => "Error"));
