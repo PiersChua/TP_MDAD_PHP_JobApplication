@@ -1,11 +1,13 @@
 <?php
+require_once __DIR__ . "/../../schema/user.php";
+require_once __DIR__ . "/../../utils/validation.php";
+require_once __DIR__ . "/../../lib/db.php";
+require_once __DIR__ . "/../../utils/jwt.php";
 
-if (isset($_POST["email"]) && isset($_POST["password"])) {
-    $email = $_POST["email"];
-    $password = $_POST["password"];
-
-    require_once __DIR__ . "/../../lib/db.php";
-    $db = DB_CONNECTION::getInstance();
+$result = Validation::validateSchema($_POST, $loginSchema);
+if ($result === null) {
+    [$email, $password] = [$_POST["email"], $_POST["password"]];
+    $db = Db::getInstance();
     if ($db->getConnection()) {
         try {
             $findExistingUserStmt = $db->getConnection()->prepare("SELECT userId,password,role from users WHERE email=?");
@@ -17,13 +19,13 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
             if ($findExistingUserStmt->fetch()) {
                 $passwordMatched = password_verify($password, $userPassword);
                 if ($passwordMatched) {
-                    require_once __DIR__ . "/../../utils/JWT.php";
-                    $token = JWT::encode(array("userId" => $userId, "role" => $role));
+
+                    $token = Jwt::encode(array("userId" => $userId, "role" => $role));
                     echo json_encode(array("message" => "Login Successful", "type" => "Success", "token" => $token));
                     /**
                      *  Verify token
                      */
-                    // $decodedToken = JWT::decode($token);
+                    // $decodedToken = Jwt::decode($token);
                     // if (isset($decodedToken["type"]) && $decodedToken["type"] === "Error") {
                     //     http_response_code(401);
                     //     echo json_encode($decodedToken);
@@ -51,5 +53,5 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
     }
 } else {
     http_response_code(400);
-    echo json_encode(array("message" => "Please fill in the required fields", "type" => "Error"));
+    echo json_encode(array("message" => $result, "type" => "Error"));
 }

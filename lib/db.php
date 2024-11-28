@@ -1,6 +1,6 @@
 <?php
 
-class DB_CONNECTION
+class Db
 {
     private static $instance = null;
     private $dbConnection = null;

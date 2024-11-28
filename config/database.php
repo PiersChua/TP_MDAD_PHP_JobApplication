@@ -2,7 +2,7 @@
 
 require_once __DIR__ . "/../lib/db.php";
 
-$db = DB_CONNECTION::getInstance();
+$db = Db::getInstance();
 
 $sql = "
 CREATE TABLE IF NOT EXISTS agencies (

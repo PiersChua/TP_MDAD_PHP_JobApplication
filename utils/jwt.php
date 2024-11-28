@@ -1,6 +1,6 @@
 <?php
 
-class JWT
+class Jwt
 {
     private static $sign_key = 'E9$zBX@U6!qaF#v&3QnPjY^kWtR7mLXCd4GV8TsMh9o1Awp*2yrK5JZebNH!Df';
     private static $expirationTime = 7; // set 7 days expiration
@@ -40,6 +40,7 @@ class JWT
     public static function decode(string $token): array
     {
         if (
+            // named capturing groups to store each part of the token in matches
             preg_match(
                 "/^(?<header>.+)\.(?<payload>.+)\.(?<signature>.+)$/",
                 $token,

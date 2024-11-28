@@ -1,11 +1,20 @@
 <?php
 $allowedRoles = ["JobSeeker", "Agent", "Admin"];
-if (isset($_POST["fullName"]) && isset($_POST["email"]) && isset($_POST["password"]) && isset($_POST["phoneNumber"]) && isset($_POST["role"])) {
-    $fullName = $_POST["fullName"];
-    $email = $_POST["email"];
-    $password = password_hash($_POST["password"], PASSWORD_BCRYPT);
-    $phoneNumber = $_POST["phoneNumber"];
-    $role = $_POST["role"];
+require_once __DIR__ . "/../../schema/user.php";
+require_once __DIR__ . "/../../utils/validation.php";
+require_once __DIR__ . "/../../lib/db.php";
+
+$result = Validation::validateSchema($_POST, $signUpSchema);
+if ($result === null) {
+    [$fullName, $email, $password, $phoneNumber, $role] = [
+        $_POST["fullName"],
+        $_POST["email"],
+        $_POST["password"],
+        $_POST["phoneNumber"],
+        $_POST["role"]
+    ];
+    $hashedPassword =
+        password_hash($_POST["password"], PASSWORD_BCRYPT);
 
     // check if the role is in ENUM
     if (!in_array($role, $allowedRoles, true)) {
@@ -13,19 +22,16 @@ if (isset($_POST["fullName"]) && isset($_POST["email"]) && isset($_POST["passwor
         exit();
     }
 
-    require_once __DIR__ . "/../../utils/validation.php";
-    if (!VALIDATION::validateEmail($email)) {
+    if (!Validation::validateEmail($email)) {
         echo json_encode(array("message" => "Invalid email type, please type in the correct format", "type" => "Error"));
         exit();
     }
-    if (!VALIDATION::validatePhoneNumber($phoneNumber)) {
+    if (!Validation::validatePhoneNumber($phoneNumber)) {
         echo json_encode(array("message" => "Invalid phone number, please type in the correct format", "type" => "Error"));
         exit();
     }
 
-    require_once __DIR__ . "/../../lib/db.php";
-
-    $db = DB_CONNECTION::getInstance();
+    $db = Db::getInstance();
 
     if ($db->getConnection()) {
         try {
@@ -45,7 +51,7 @@ if (isset($_POST["fullName"]) && isset($_POST["email"]) && isset($_POST["passwor
             }
 
             $createNewUserStmt = $db->getConnection()->prepare("INSERT INTO users (fullName, email, password, phoneNumber, role) VALUES (?,?,?,?,?)");
-            $createNewUserStmt->bind_param("sssis", $fullName, $email, $password, $phoneNumber, $role);
+            $createNewUserStmt->bind_param("sssis", $fullName, $email, $hashedPassword, $phoneNumber, $role);
             $createNewUserStmt->execute();
             $createNewUserStmt->close();
             echo json_encode(array("message" => "User successfully created", "type" => "Success"));
@@ -60,5 +66,5 @@ if (isset($_POST["fullName"]) && isset($_POST["email"]) && isset($_POST["passwor
     }
 } else {
     http_response_code(400);
-    echo json_encode(array("message" => "Please fill in the required fields", "type" => "Error"));
+    echo json_encode(array("message" => $result, "type" => "Error"));
 }
