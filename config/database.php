@@ -11,7 +11,10 @@ CREATE TABLE IF NOT EXISTS agencies (
     email VARCHAR(255) NOT NULL UNIQUE,
     phoneNumber INT NOT NULL UNIQUE,
     address VARCHAR(255),
-    PRIMARY KEY (agencyId)
+    userId CHAR(36) NOT NULL,
+    PRIMARY KEY (agencyId),
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -31,6 +34,9 @@ CREATE TABLE IF NOT EXISTS users (
     PRIMARY KEY (userId),
     FOREIGN KEY (agencyId) REFERENCES agencies(agencyId)
 );
+
+ALTER TABLE agencies 
+ADD FOREIGN KEY (userId) REFERENCES users(userId);
 ";
 if ($db->getConnection()) {
     if (mysqli_multi_query($db->getConnection(), $sql)) {
