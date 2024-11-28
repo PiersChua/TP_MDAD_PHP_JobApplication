@@ -13,13 +13,24 @@ if (isset($_POST["fullName"]) && isset($_POST["email"]) && isset($_POST["passwor
         exit();
     }
 
+    require_once __DIR__ . "/../../utils/validation.php";
+    if (!VALIDATION::validateEmail($email)) {
+        echo json_encode(array("message" => "Invalid email type, please type in the correct format", "type" => "Error"));
+        exit();
+    }
+    if (!VALIDATION::validatePhoneNumber($phoneNumber)) {
+        echo json_encode(array("message" => "Invalid phone number, please type in the correct format", "type" => "Error"));
+        exit();
+    }
+
     require_once __DIR__ . "/../../lib/db.php";
+
     $db = DB_CONNECTION::getInstance();
 
     if ($db->getConnection()) {
         try {
-            $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE email=?");
-            $findExistingUserStmt->bind_param("s", $email);
+            $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE email=? OR phoneNumber=?");
+            $findExistingUserStmt->bind_param("si", $email, $phoneNumber);
             $findExistingUserStmt->execute();
             $findExistingUserStmt->bind_result($count);
             $findExistingUserStmt->fetch();

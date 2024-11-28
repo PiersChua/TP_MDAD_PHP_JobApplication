@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS agencies (
     agencyId CHAR(36) NOT NULL DEFAULT (UUID()), 
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    phoneNumber INT NOT NULL UNIQUE,
     address VARCHAR(255),
     PRIMARY KEY (agencyId)
 );
@@ -18,9 +19,9 @@ CREATE TABLE IF NOT EXISTS users (
     fullName VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    phoneNumber INT NOT NULL,
+    phoneNumber INT NOT NULL UNIQUE,
     dateOfBirth DATE,
-    role ENUM('JobSeeker', 'Agent', 'Admin') NOT NULL,
+    role ENUM('JobSeeker', 'Agent', 'Agency Admin', 'Admin') NOT NULL,
     gender ENUM('Male', 'Female'),
     nationality ENUM('Singaporean', 'PR', 'Others'),
     resume VARCHAR(255),

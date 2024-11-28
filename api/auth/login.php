@@ -25,7 +25,7 @@ if (isset($_POST["email"]) && isset($_POST["password"])) {
                      */
                     // $decodedToken = JWT::decode($token);
                     // if (isset($decodedToken["type"]) && $decodedToken["type"] === "Error") {
-                    //     http_response_code(401)
+                    //     http_response_code(401);
                     //     echo json_encode($decodedToken);
                     // } else {
                     //     echo json_encode($decodedToken);

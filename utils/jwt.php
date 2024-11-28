@@ -57,6 +57,7 @@ class JWT
 
         $signature_from_token = self::base64URLDecode($matches["signature"]);
 
+        // checks if the signature from token matches the one that is just signed
         if (!hash_equals($signature, $signature_from_token)) {
             return array("message" => "Invalid token", "type" => "Error");
         }
