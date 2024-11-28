@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS agencies (
     agencyId CHAR(36) NOT NULL DEFAULT (UUID()), 
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    phoneNumber INT NOT NULL UNIQUE,
+    phoneNumber VARCHAR(10) NOT NULL UNIQUE,
     address VARCHAR(255),
     userId CHAR(36) NOT NULL,
     PRIMARY KEY (agencyId),
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     fullName VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    phoneNumber INT NOT NULL UNIQUE,
+    phoneNumber VARCHAR(10) NOT NULL UNIQUE,
     dateOfBirth DATE,
     role ENUM('JobSeeker', 'Agent', 'Agency Admin', 'Admin') NOT NULL,
     gender ENUM('Male', 'Female'),
@@ -37,6 +37,56 @@ CREATE TABLE IF NOT EXISTS users (
 
 ALTER TABLE agencies 
 ADD FOREIGN KEY (userId) REFERENCES users(userId);
+
+CREATE TABLE IF NOT EXISTS jobs(
+    jobId CHAR(36) NOT NULL DEFAULT (UUID()), 
+    position VARCHAR(255) NOT NULL,
+    responsibilities VARCHAR(1000) NOT NULL,
+    description VARCHAR(1000) NOT NULL,
+    isPartTime BIT(1) NOT NULL,
+    isFullTime BIT(1) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    schedule VARCHAR(255) NOT NULL,
+    organisation VARCHAR(255) NOT NULL,
+    partTimeSalary DECIMAL(6,2),
+    fullTimeSalary DECIMAL(8,2),
+    userId CHAR(36) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (jobId),
+    FOREIGN KEY (userId) REFERENCES users(userId)
+);
+
+CREATE TABLE IF NOT EXISTS job_applications(
+    status ENUM ('PENDING','ACCEPTED','REJECTED') NOT NULL DEFAULT 'PENDING',
+    userId CHAR(36) NOT NULL,
+    jobId CHAR(36) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (userId,jobId)
+);
+
+CREATE TABLE IF NOT EXISTS favourite_jobs(
+    userId CHAR(36) NOT NULL,
+    jobId CHAR(36) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (userId,jobId)
+);
+
+CREATE TABLE IF NOT EXISTS agency_applications(
+    agencyApplicationId CHAR(36) NOT NULL DEFAULT (UUID()),
+    status ENUM ('PENDING','ACCEPTED','REJECTED') NOT NULL DEFAULT 'PENDING',
+    agencyName VARCHAR(255) NOT NULL UNIQUE,
+    agencyEmail VARCHAR(255) NOT NULL UNIQUE,
+    agencyPhoneNumber VARCHAR(10) NOT NULL UNIQUE,
+    agencyAddress VARCHAR(255),
+    userId CHAR(36) NOT NULL,
+    created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (agencyApplicationId),
+    FOREIGN KEY (userId) REFERENCES users(userId)
+);
 ";
 if ($db->getConnection()) {
     if (mysqli_multi_query($db->getConnection(), $sql)) {
