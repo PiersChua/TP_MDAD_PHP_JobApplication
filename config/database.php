@@ -7,7 +7,7 @@ $db = Db::getInstance();
 $sql = "
 CREATE TABLE IF NOT EXISTS agencies (
     agencyId CHAR(36) NOT NULL DEFAULT (UUID()), 
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     phoneNumber VARCHAR(10) NOT NULL UNIQUE,
     address VARCHAR(255),
@@ -40,7 +40,7 @@ ADD FOREIGN KEY (userId) REFERENCES users(userId);
 
 CREATE TABLE IF NOT EXISTS jobs(
     jobId CHAR(36) NOT NULL DEFAULT (UUID()), 
-    position VARCHAR(255) NOT NULL UNIQUE,
+    position VARCHAR(255) NOT NULL,
     responsibilities VARCHAR(1000) NOT NULL,
     description VARCHAR(1000) NOT NULL,
     location VARCHAR(255) NOT NULL,

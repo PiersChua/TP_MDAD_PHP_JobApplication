@@ -36,19 +36,6 @@ if ($result === null) {
                 exit();
             }
 
-            $findExistingJobStmt = $db->getConnection()->prepare("SELECT COUNT(*) FROM jobs WHERE position=?");
-            $findExistingJobStmt->bind_param("s", $position);
-            $findExistingJobStmt->execute();
-            $findExistingJobStmt->bind_result($jobCount);
-            $findExistingJobStmt->fetch();
-            $findExistingJobStmt->close();
-            if ($jobCount > 0) {
-                http_response_code(400);
-                echo json_encode(array("message" => "Job already exists", "type" => "error"));
-                $db->close();
-                exit();
-            }
-
             $createJobStmt = $db->getConnection()->prepare("INSERT INTO jobs (position, responsibilities, description, location, schedule, organisation, partTimeSalary, fullTimeSalary, userId) VALUES (?,?,?,?,?,?,?,?,?)");
             $createJobStmt->bind_param("ssssssdds", $position, $responsibilities, $description, $location, $schedule, $organisation, $partTimeSalary, $fullTimeSalary, $userId);
             $createJobStmt->execute();

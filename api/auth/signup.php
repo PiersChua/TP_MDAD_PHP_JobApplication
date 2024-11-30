@@ -36,7 +36,7 @@ if ($result === null) {
     if ($db->getConnection()) {
         try {
             $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE email=? OR phoneNumber=?");
-            $findExistingUserStmt->bind_param("si", $email, $phoneNumber);
+            $findExistingUserStmt->bind_param("ss", $email, $phoneNumber);
             $findExistingUserStmt->execute();
             $findExistingUserStmt->bind_result($count);
             $findExistingUserStmt->fetch();
@@ -50,11 +50,11 @@ if ($result === null) {
                 exit();
             }
 
-            $createNewUserStmt = $db->getConnection()->prepare("INSERT INTO users (fullName, email, password, phoneNumber, role) VALUES (?,?,?,?,?)");
-            $createNewUserStmt->bind_param("sssis", $fullName, $email, $hashedPassword, $phoneNumber, $role);
-            $createNewUserStmt->execute();
-            $createNewUserStmt->close();
-            echo json_encode(array("message" => "User successfully created", "type" => "Success"));
+            $createUserStmt = $db->getConnection()->prepare("INSERT INTO users (fullName, email, password, phoneNumber, role) VALUES (?,?,?,?,?)");
+            $createUserStmt->bind_param("sssss", $fullName, $email, $hashedPassword, $phoneNumber, $role);
+            $createUserStmt->execute();
+            $createUserStmt->close();
+            echo json_encode(array("message" => "User created", "type" => "Success"));
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
