@@ -11,7 +11,7 @@ if ($result === null) {
     if ($db->getConnection()) {
         try {
             // check if user exists
-            $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=?");
+            $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='JobSeeker'");
             $findExistingUserStmt->bind_param("s", $userId);
             $findExistingUserStmt->execute();
             $findExistingUserStmt->bind_result($userCount);

@@ -13,14 +13,6 @@ $jobSchema = [
         "required" => true,
         "message" => "Description is required"
     ],
-    "isPartTime" => [
-        "required" => true,
-        "message" => "Employment type is required"
-    ],
-    "isFullTime" => [
-        "required" => true,
-        "message" => "Employment type is required"
-    ],
     "location" => [
         "required" => true,
         "message" => "Location is required"

@@ -40,11 +40,9 @@ ADD FOREIGN KEY (userId) REFERENCES users(userId);
 
 CREATE TABLE IF NOT EXISTS jobs(
     jobId CHAR(36) NOT NULL DEFAULT (UUID()), 
-    position VARCHAR(255) NOT NULL,
+    position VARCHAR(255) NOT NULL UNIQUE,
     responsibilities VARCHAR(1000) NOT NULL,
     description VARCHAR(1000) NOT NULL,
-    isPartTime BIT(1) NOT NULL,
-    isFullTime BIT(1) NOT NULL,
     location VARCHAR(255) NOT NULL,
     schedule VARCHAR(255) NOT NULL,
     organisation VARCHAR(255) NOT NULL,
