@@ -16,7 +16,7 @@ class Validation
     public static function validateSchema($data, $schema): ?string
     {
         foreach ($schema as $field => $rules) {
-            if (!isset($data[$field]) && !empty($rules["required"])) {
+            if ((!isset($data[$field]) || $data[$field] === "") && !empty($rules["required"])) {
                 return $rules["message"];
             }
         }
