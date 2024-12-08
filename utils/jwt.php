@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * JWT Class to encapsulate information and perform verification
+ */
 class Jwt
 {
     private static $sign_key = 'E9$zBX@U6!qaF#v&3QnPjY^kWtR7mLXCd4GV8TsMh9o1Awp*2yrK5JZebNH!Df';
@@ -12,6 +15,13 @@ class Jwt
     // {
     //     this->$sign_key = getenv("JWT_SECRET");
     // }
+    /**
+     * Encodes a payload into a JSON Web Token (JWT)
+     * 
+     * 
+     * @param array $payload The information to encapsulate
+     * @return string returns JWT
+     */
     public static function encode(array $payload): string
     {
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
@@ -36,7 +46,12 @@ class Jwt
 
         return $jwt;
     }
-
+    /**
+     * Decodes a JSON Web Token (JWT) into it's payload
+     * 
+     * @param string $token The JWT token to decode
+     * @return array The decoded payload if all validation passes, else an array with error messages 
+     */
     public static function decode(string $token): array
     {
         if (

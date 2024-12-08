@@ -29,6 +29,7 @@ if ($result === null) {
             $findExistingUserStmt->bind_result($userCount);
             $findExistingUserStmt->fetch();
             $findExistingUserStmt->close();
+            // check if agent exists
             if ($userCount === 0) {
                 http_response_code(404);
                 echo json_encode(array("message" => "Agent not found", "type" => "Error"));
