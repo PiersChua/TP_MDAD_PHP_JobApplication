@@ -10,10 +10,10 @@ if ($result === null) {
     $db = Db::getInstance();
     if ($db->getConnection()) {
         try {
-            $findExistingUserStmt = $db->getConnection()->prepare("SELECT userId,password,role from users WHERE email=?");
+            $findExistingUserStmt = $db->getConnection()->prepare("SELECT userId,password,role, fullName from users WHERE email=?");
             $findExistingUserStmt->bind_param("s", $email);
             $findExistingUserStmt->execute();
-            $findExistingUserStmt->bind_result($userId, $userPassword, $role);
+            $findExistingUserStmt->bind_result($userId, $userPassword, $role, $fullName);
 
             // fetch returns true if user exist 
             if ($findExistingUserStmt->fetch()) {
@@ -21,7 +21,7 @@ if ($result === null) {
                 if ($passwordMatched) {
 
                     $token = Jwt::encode(array("userId" => $userId, "role" => $role));
-                    echo json_encode(array("message" => "Login Successful", "type" => "Success", "token" => $token));
+                    echo json_encode(array("message" => "Login Successful", "type" => "Success", "token" => $token, "userId" => $userId, "role" => $role, "fullName" => $fullName));
                     /**
                      *  Verify token
                      */
