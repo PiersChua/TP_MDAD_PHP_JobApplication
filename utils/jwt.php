@@ -84,6 +84,37 @@ class Jwt
 
         return $payload;
     }
+    /**
+     * Perform a verfication to check if the userId in a payload matches the given userId
+     * 
+     * @param array $payload The payload from decoding the JSON Web Token (JWT)
+     * @param string $userId The user identifier from the $_POST superglobal
+     */
+    public static function verifyPayloadWithUserId(array $payload, string $userId)
+    {
+        if (isset($payload["type"]) && $payload["type"] === "Error") {
+            http_response_code(401);
+            echo json_encode($payload);
+            exit();
+        }
+        // check if token belongs to the user
+        if ($payload["userId"] !== $userId) {
+            http_response_code(401);
+            echo json_encode(array("message" => "Unauthorized Token", "type" => "Error"));
+            exit();
+        }
+    }
+    public static function getTokenFromHeader($headers): ?string
+    {
+        if (!isset($headers["Authorization"])) {
+            return null;
+        }
+        $matches = array();
+        if (preg_match('/Bearer\s+(\S+)/', trim($headers['Authorization']), $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
 
     private static function base64URLEncode(string $text): string
     {

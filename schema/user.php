@@ -32,3 +32,18 @@ $loginSchema = [
         "message" => "Password is required"
     ],
 ];
+
+$updateUserSchema = [
+    "fullName" => [
+        "required" => true,
+        "message" => "Full Name is required"
+    ],
+    "email" => [
+        "required" => true,
+        "message" => "Email is required"
+    ],
+    "phoneNumber" => [
+        "required" => true,
+        "message" => "Phone number is required"
+    ]
+];
