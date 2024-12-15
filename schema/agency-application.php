@@ -1,22 +1,19 @@
 <?php
 
 $agencyApplicationSchema = [
-    "agencyName" => [
+    "name" => [
         "required" => "true",
         "message" => "Agency Name is required",
     ],
-    "agencyEmail" => [
+    "email" => [
         "required" => true,
         "message" => "Agency Email is required",
     ],
-    "agencyPhoneNumber" => [
+    "phoneNumber" => [
         "required" => true,
         "message" => "Agency Phone Number is required",
     ],
-    "agencyAddress" => [
+    "address" => [
         "required" => false
     ],
-    "userId" => [
-        "required" => true,
-    ]
 ];

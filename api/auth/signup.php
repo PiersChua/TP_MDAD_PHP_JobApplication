@@ -26,7 +26,10 @@ if (!in_array($role, $allowedRoles, true)) {
     echo json_encode(array("message" => "Role does not exist", "type" => "Error"));
     exit();
 }
-
+if (!Validation::validateName($fullName)) {
+    echo json_encode(array("message" => "Invalid name, please type in the correct format", "type" => "Error"));
+    exit();
+}
 if (!Validation::validateEmail($email)) {
     echo json_encode(array("message" => "Invalid email type, please type in the correct format", "type" => "Error"));
     exit();

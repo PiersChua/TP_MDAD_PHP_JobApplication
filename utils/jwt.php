@@ -6,7 +6,7 @@
 class Jwt
 {
     private static $sign_key = 'E9$zBX@U6!qaF#v&3QnPjY^kWtR7mLXCd4GV8TsMh9o1Awp*2yrK5JZebNH!Df';
-    private static $expirationTime = 7; // set 7 days expiration
+    private static int $expirationTime = 7; // set 7 days expiration
 
     /**
      *  getenv is not working, need to use phpdotenv

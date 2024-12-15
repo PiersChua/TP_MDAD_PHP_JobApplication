@@ -5,6 +5,23 @@
  */
 class Validation
 {
+    private static int $minNameLength = 5;
+    /**
+     * Validates a name based on the 
+     */
+    public static function validateName($name): bool
+    {
+        // Check if the name is long enough
+        if (strlen($name) < self::$minNameLength) {
+            return false;
+        }
+
+        // Check if the name contains any numbers
+        if (preg_match('/\d/', $name)) {
+            return false;
+        }
+        return true;
+    }
     /**
      * Validates a phone number based on Singapore's phone number format.
      * - Starts with 6, 8, or 9

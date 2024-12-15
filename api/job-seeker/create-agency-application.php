@@ -2,33 +2,46 @@
 require_once __DIR__ . "/../../schema/agency-application.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
-$result = Validation::validateSchema($_POST, $agencyApplicationSchema);
+require_once __DIR__ . "/../../utils/jwt.php";
 
+$headers = apache_request_headers();
+$token = Jwt::getTokenFromHeader($headers);
+
+if (!isset($_POST["userId"]) || is_null($token)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
+    exit();
+}
+$result = Validation::validateSchema($_POST, $agencyApplicationSchema);
 if ($result !== null) {
     http_response_code(400);
     echo json_encode(array("message" => $result, "type" => "Error"));
     exit();
 }
 // todo: change this to extract the userId from jwt token from headers
-[$agencyName, $agencyEmail, $agencyPhoneNumber, $agencyAddress, $userId] = [
-    $_POST["agencyName"],
-    $_POST["agencyEmail"],
-    $_POST["agencyPhoneNumber"],
-    $_POST["agencyAddress"] ?? null,
+[$name, $email, $phoneNumber, $address, $userId] = [
+    $_POST["name"],
+    $_POST["email"],
+    $_POST["phoneNumber"],
+    trim($_POST["address"]),
     $_POST["userId"]
 ];
-if (!Validation::validateEmail($agencyEmail)) {
+if (!Validation::validateName($name)) {
+    echo json_encode(array("message" => "Invalid name, please type in the correct format", "type" => "Error"));
+    exit();
+}
+if (!Validation::validateEmail($email)) {
     echo json_encode(array("message" => "Invalid email type, please type in the correct format", "type" => "Error"));
     exit();
 }
-if (!Validation::validatePhoneNumber($agencyPhoneNumber)) {
+if (!Validation::validatePhoneNumber($phoneNumber)) {
     echo json_encode(array("message" => "Invalid phone number, please type in the correct format", "type" => "Error"));
     exit();
 }
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='JobSeeker'");
+        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Job Seeker'");
         $findExistingUserStmt->bind_param("s", $userId);
         $findExistingUserStmt->execute();
         $findExistingUserStmt->bind_result($userCount);
@@ -40,20 +53,31 @@ if ($db->getConnection()) {
             exit();
         }
 
-        $findExistingAgencyStmt = $db->getConnection()->prepare("SELECT COUNT(*) from agencies WHERE name=? OR email=? OR phoneNumber=?");
-        $findExistingAgencyStmt->bind_param("sss", $agencyName, $agencyEmail, $agencyPhoneNumber);
-        $findExistingAgencyStmt->bind_result($agencyCount);
-        $findExistingAgencyStmt->execute();
-        $findExistingAgencyStmt->fetch();
-        $findExistingAgencyStmt->close();
-        if ($agencyCount > 0) {
+        // check the db if a record already exists, combine the result with UNION ALL
+        $findDuplicateStmt = $db->getConnection()->prepare("
+            SELECT COUNT(*) 
+            FROM (
+                SELECT email, phoneNumber FROM users WHERE email = ? OR phoneNumber = ?
+                UNION ALL
+                SELECT email, phoneNumber FROM agencies WHERE email = ? OR phoneNumber = ? OR name = ?
+                UNION ALL
+                SELECT email, phoneNumber FROM agency_applications WHERE email = ? OR phoneNumber = ? OR name = ?
+            ) AS combined
+        ");
+        $findDuplicateStmt->bind_param("ssssssss", $email, $phoneNumber, $email, $phoneNumber, $name, $email, $phoneNumber, $name);
+        $findDuplicateStmt->execute();
+        $findDuplicateStmt->bind_result($duplicateCount);
+        $findDuplicateStmt->fetch();
+        $findDuplicateStmt->close();
+
+        if ($duplicateCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "Agency already exists", "type" => "Error"));
+            echo json_encode(array("message" => "Email, phone number or agency name is already in use", "type" => "Error"));
             exit();
         }
 
-        $createAgencyStmt = $db->getConnection()->prepare("INSERT INTO agency_applications (agencyName, agencyEmail, agencyPhoneNumber, agencyAddress, userId) VALUES(?,?,?,?,?) ");
-        $createAgencyStmt->bind_param("sssss", $agencyName, $agencyEmail, $agencyPhoneNumber, $agencyAddress, $userId);
+        $createAgencyStmt = $db->getConnection()->prepare("INSERT INTO agency_applications (name, email, phoneNumber, address, userId) VALUES(?,?,?,?,?) ");
+        $createAgencyStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $userId);
         $createAgencyStmt->execute();
         $createAgencyStmt->close();
         echo json_encode(array("message" => "Agency application submitted", "type" => "Success"));
