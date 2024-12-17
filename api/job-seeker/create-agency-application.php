@@ -12,18 +12,20 @@ if (!isset($_POST["userId"]) || is_null($token)) {
     echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
     exit();
 }
+
+// Validate schema
 $result = Validation::validateSchema($_POST, $agencyApplicationSchema);
 if ($result !== null) {
     http_response_code(400);
     echo json_encode(array("message" => $result, "type" => "Error"));
     exit();
 }
-// todo: change this to extract the userId from jwt token from headers
+
 [$name, $email, $phoneNumber, $address, $userId] = [
     $_POST["name"],
     $_POST["email"],
     $_POST["phoneNumber"],
-    trim($_POST["address"]),
+    !is_null(trim($_POST["address"])) ? trim($_POST["address"]) : null,
     $_POST["userId"]
 ];
 if (!Validation::validateName($name)) {
@@ -38,6 +40,12 @@ if (!Validation::validatePhoneNumber($phoneNumber)) {
     echo json_encode(array("message" => "Invalid phone number, please type in the correct format", "type" => "Error"));
     exit();
 }
+
+// Verify token
+$payload = Jwt::decode($token);
+Jwt::verifyPayloadWithUserId($payload, $userId);
+
+
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {

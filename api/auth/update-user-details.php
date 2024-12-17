@@ -18,7 +18,7 @@ if ($result !== null) {
     echo json_encode(array("message" => $result, "type" => "Error"));
     exit();
 }
-[$userId, $fullName, $email, $phoneNumber, $token] = [$_POST["userId"], StringUtils::capitalizeName($_POST["fullName"]), $_POST["email"], $_POST["phoneNumber"], $token];
+[$userId, $fullName, $email, $phoneNumber] = [$_POST["userId"], StringUtils::capitalizeName($_POST["fullName"]), $_POST["email"], $_POST["phoneNumber"]];
 /**
  *  Verify token
  */
