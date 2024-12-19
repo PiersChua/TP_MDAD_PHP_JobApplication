@@ -2,20 +2,33 @@
 require_once __DIR__ . "/../../schema/job-application.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
+require_once __DIR__ . "/../../utils/jwt.php";
+
+
+$headers = apache_request_headers();
+$token = Jwt::getTokenFromHeader($headers);
+if (!isset($_POST["userId"]) || is_null($token)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
+    exit();
+}
 $result = Validation::validateSchema($_POST, $jobApplicationSchema);
 if ($result !== null) {
     http_response_code(400);
     echo json_encode(array("message" => $result, "type" => "Error"));
     exit();
 }
-// todo: change this to extract the userId from jwt token from headers
 [$userId, $jobId] = [$_POST["userId"], $_POST["jobId"]];
-
+/**
+ *  Verify token
+ */
+$payload = Jwt::decode($token);
+Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         // check if user exists
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='JobSeeker'");
+        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Job Seeker'");
         $findExistingUserStmt->bind_param("s", $userId);
         $findExistingUserStmt->execute();
         $findExistingUserStmt->bind_result($userCount);
@@ -24,7 +37,6 @@ if ($db->getConnection()) {
         if ($userCount === 0) {
             http_response_code(404);
             echo json_encode(array("message" => "User not found", "type" => "Error"));
-            $db->close();
             exit();
         }
 
@@ -38,7 +50,19 @@ if ($db->getConnection()) {
         if ($jobCount === 0) {
             http_response_code(404);
             echo json_encode(array("message" => "Job not found", "type" => "Error"));
-            $db->close();
+            exit();
+        }
+
+        // check if job application exists
+        $findExistingJobApplicationStmt = $db->getConnection()->prepare("SELECT COUNT(*) FROM job_applications WHERE jobId=? AND userId=?");
+        $findExistingJobApplicationStmt->bind_param("ss", $jobId, $userId);
+        $findExistingJobApplicationStmt->execute();
+        $findExistingJobApplicationStmt->bind_result($jobApplicationCount);
+        $findExistingJobApplicationStmt->fetch();
+        $findExistingJobApplicationStmt->close();
+        if ($jobApplicationCount > 0) {
+            http_response_code(400);
+            echo json_encode(array("message" => "Job Application already submitted", "type" => "Error"));
             exit();
         }
 

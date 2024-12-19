@@ -38,7 +38,6 @@ if ($db->getConnection()) {
         if ($count > 0) {
             http_response_code(400);
             echo json_encode(array("message" => "User already exists", "type" => "Error"));
-            $db->close();
             exit();
         }
 
@@ -46,8 +45,6 @@ if ($db->getConnection()) {
         $updateUserStmt->bind_param("ssss", $fullName, $email, $phoneNumber, $userId);
         $updateUserStmt->execute();
         $updateUserStmt->close();
-
-        http_response_code(200);
         echo json_encode(array("message" => "Profile updated", "type" => "Success"));
     } catch (Exception $e) {
         http_response_code(500);

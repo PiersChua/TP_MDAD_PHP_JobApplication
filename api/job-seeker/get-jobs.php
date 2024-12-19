@@ -21,6 +21,7 @@ if ($db->getConnection()) {
         $findJobsStmt = $db->getConnection()->prepare("SELECT * FROM jobs");
         $findJobsStmt->execute();
         $result = $findJobsStmt->get_result();
+        $findJobsStmt->close();
         $jobs = $result->fetch_all(MYSQLI_ASSOC); // Fetches all rows as an associative array
         echo json_encode(array("data" => $jobs, "type" => "Success"));
     } catch (Exception $e) {

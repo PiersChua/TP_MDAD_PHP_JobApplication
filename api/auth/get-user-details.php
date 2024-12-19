@@ -10,7 +10,7 @@ if (!isset($_POST["userId"]) || is_null($token)) {
     echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
     exit();
 }
-[$userId, $token] = [$_POST["userId"], $token];
+$userId = $_POST["userId"];
 /**
  *  Verify token
  */
@@ -37,7 +37,6 @@ if ($db->getConnection()) {
                 "type" => "Success"
             );
 
-            http_response_code(200);
             echo json_encode($userDetails);
         } else {
             http_response_code(401);

@@ -54,7 +54,6 @@ if ($db->getConnection()) {
         if ($count > 0) {
             http_response_code(400);
             echo json_encode(array("message" => "User already exists", "type" => "Error"));
-            $db->close();
             exit();
         }
 
