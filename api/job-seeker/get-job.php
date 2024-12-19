@@ -46,6 +46,15 @@ if ($db->getConnection()) {
         $findExistingJobStmt->close();
         $job = $result->fetch_assoc(); // fetches a single row
         if ($job !== null) {
+            $findExistingFavouriteStmt = $db->getConnection()->prepare("
+            SELECT COUNT(*) FROM favourite_jobs WHERE userId = ? AND jobId = ?
+        ");
+            $findExistingFavouriteStmt->bind_param("ss", $userId, $jobId);
+            $findExistingFavouriteStmt->execute();
+            $findExistingFavouriteStmt->bind_result($favouriteCount);
+            $findExistingFavouriteStmt->fetch();
+            $findExistingFavouriteStmt->close();
+            $job['isFavourite'] = $favouriteCount > 0;
             echo json_encode(array("data" => $job, "type" => "Success"));
         } else {
             http_response_code(404);
