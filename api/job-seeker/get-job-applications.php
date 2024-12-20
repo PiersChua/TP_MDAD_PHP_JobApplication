@@ -19,7 +19,7 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         $findFavouritesStmt = $db->getConnection()->prepare("
-        SELECT jobs.*, job_applications.status, job_applications.createdAt, job_applications.updatedAt FROM jobs
+        SELECT jobs.*, job_applications.status, job_applications.createdAt as job_application_created_at, job_applications.updatedAt as job_application_updated_at FROM jobs
         INNER JOIN job_applications ON jobs.jobId = job_applications.jobId
         WHERE job_applications.userId=?");
         $findFavouritesStmt->bind_param("s", $userId);

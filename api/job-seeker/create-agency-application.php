@@ -65,11 +65,11 @@ if ($db->getConnection()) {
         $findDuplicateStmt = $db->getConnection()->prepare("
             SELECT COUNT(*) 
             FROM (
-                SELECT email, phoneNumber FROM users WHERE email = ? OR phoneNumber = ?
+                SELECT email FROM users WHERE email = ? OR phoneNumber = ?
                 UNION ALL
-                SELECT email, phoneNumber FROM agencies WHERE email = ? OR phoneNumber = ? OR name = ?
+                SELECT email FROM agencies WHERE email = ? OR phoneNumber = ? OR name = ?
                 UNION ALL
-                SELECT email, phoneNumber FROM agency_applications WHERE email = ? OR phoneNumber = ? OR name = ?
+                SELECT email FROM agency_applications WHERE email = ? OR phoneNumber = ? OR name = ?
             ) AS combined
         ");
         $findDuplicateStmt->bind_param("ssssssss", $email, $phoneNumber, $email, $phoneNumber, $name, $email, $phoneNumber, $name);
@@ -84,10 +84,10 @@ if ($db->getConnection()) {
             exit();
         }
 
-        $createAgencyStmt = $db->getConnection()->prepare("INSERT INTO agency_applications (name, email, phoneNumber, address, userId) VALUES(?,?,?,?,?) ");
-        $createAgencyStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $userId);
-        $createAgencyStmt->execute();
-        $createAgencyStmt->close();
+        $createAgencyApplicationStmt = $db->getConnection()->prepare("INSERT INTO agency_applications (name, email, phoneNumber, address, userId) VALUES(?,?,?,?,?) ");
+        $createAgencyApplicationStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $userId);
+        $createAgencyApplicationStmt->execute();
+        $createAgencyApplicationStmt->close();
         echo json_encode(array("message" => "Agency application submitted", "type" => "Success"));
     } catch (Exception $e) {
         http_response_code(500);

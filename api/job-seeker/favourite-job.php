@@ -67,7 +67,7 @@ if ($db->getConnection()) {
             $removeFavouriteStmt->bind_param("ss", $jobId, $userId);
             $removeFavouriteStmt->execute();
             $removeFavouriteStmt->close();
-            echo json_encode(array("message" => "Favourite removed", "type" => "Success"));
+            echo json_encode(array("message" => "Job removed from favourites", "type" => "Success"));
             exit();
         }
 
@@ -76,7 +76,7 @@ if ($db->getConnection()) {
         $createFavouriteStmt->bind_param("ss", $userId, $jobId);
         $createFavouriteStmt->execute();
         $createFavouriteStmt->close();
-        echo json_encode(array("message" => "Favourite added", "type" => "Success"));
+        echo json_encode(array("message" => "Job added to favourites", "type" => "Success"));
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
