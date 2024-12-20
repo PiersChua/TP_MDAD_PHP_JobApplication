@@ -28,16 +28,13 @@ if ($db->getConnection()) {
          * Second inner join links users to their respective agencies
          * Where clause filters the jobs where the jobId matches
          */
-        // $findExistingJobStmt = $db->getConnection()->prepare("
-        //     SELECT jobs.*, agencies.name
-        //     FROM jobs
-        //     INNER JOIN users ON jobs.userId = users.userId
-        //     INNER JOIN agencies ON users.agencyId = agencies.agencyId
-        //     WHERE jobs.jobId = ?
-        // ");
         $findExistingJobStmt = $db->getConnection()->prepare("
-            SELECT jobs.*
+            SELECT jobs.*, 
+            users.fullName as user_fullName, users.email as user_email, users.phoneNumber as user_phoneNumber,
+            agencies.name as agency_name, agencies.email as agency_email, agencies.phoneNumber as agency_phoneNumber, agencies.address as agency_address
             FROM jobs
+            INNER JOIN users ON jobs.userId = users.userId
+            INNER JOIN agencies ON users.agencyId = agencies.agencyId
             WHERE jobs.jobId = ?
         ");
         $findExistingJobStmt->bind_param("s", $jobId);
@@ -54,7 +51,17 @@ if ($db->getConnection()) {
             $findExistingFavouriteStmt->bind_result($favouriteCount);
             $findExistingFavouriteStmt->fetch();
             $findExistingFavouriteStmt->close();
+
+            $findExistingJobApplicationStmt = $db->getConnection()->prepare("
+            SELECT COUNT(*) FROM job_applications WHERE userId = ? AND jobId = ?
+        ");
+            $findExistingJobApplicationStmt->bind_param("ss", $userId, $jobId);
+            $findExistingJobApplicationStmt->execute();
+            $findExistingJobApplicationStmt->bind_result($applicationCount);
+            $findExistingJobApplicationStmt->fetch();
+            $findExistingJobApplicationStmt->close();
             $job['isFavourite'] = $favouriteCount > 0;
+            $job["isApplied"] = $applicationCount > 0;
             echo json_encode(array("data" => $job, "type" => "Success"));
         } else {
             http_response_code(404);

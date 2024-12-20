@@ -19,8 +19,10 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         $findFavouritesStmt = $db->getConnection()->prepare("
-        SELECT jobs.* FROM jobs
+        SELECT jobs.*, agencies.name as agency_name FROM jobs
         INNER JOIN favourite_jobs ON jobs.jobId = favourite_jobs.jobId
+        INNER JOIN users ON jobs.userId = users.userId
+        INNER JOIN agencies ON users.agencyId = agencies.agencyId
         WHERE favourite_jobs.userId=?");
         $findFavouritesStmt->bind_param("s", $userId);
         $findFavouritesStmt->execute();

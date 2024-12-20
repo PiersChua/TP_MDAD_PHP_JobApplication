@@ -18,7 +18,14 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        $findJobsStmt = $db->getConnection()->prepare("SELECT * FROM jobs");
+        if (isset($_GET["limit"]) && is_numeric($_GET["limit"])) {
+            // extract the jobs based on the limit given
+            $limit = $_GET["limit"];
+            $findJobsStmt = $db->getConnection()->prepare("SELECT * FROM jobs LIMIT ?");
+            $findJobsStmt->bind_param("i", $limit);
+        } else {
+            $findJobsStmt = $db->getConnection()->prepare("SELECT * FROM jobs");
+        }
         $findJobsStmt->execute();
         $result = $findJobsStmt->get_result();
         $findJobsStmt->close();

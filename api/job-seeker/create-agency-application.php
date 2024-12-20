@@ -70,7 +70,7 @@ if ($db->getConnection()) {
                 SELECT email FROM agencies WHERE email = ? OR phoneNumber = ? OR name = ?
                 UNION ALL
                 SELECT email FROM agency_applications WHERE email = ? OR phoneNumber = ? OR name = ?
-            ) AS combined
+            ) as combined
         ");
         $findDuplicateStmt->bind_param("ssssssss", $email, $phoneNumber, $email, $phoneNumber, $name, $email, $phoneNumber, $name);
         $findDuplicateStmt->execute();

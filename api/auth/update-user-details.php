@@ -27,17 +27,22 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE (email=? OR phoneNumber=?) AND userId!=?");
-        $findExistingUserStmt->bind_param("sss", $email, $phoneNumber, $userId);
-        $findExistingUserStmt->execute();
-        $findExistingUserStmt->bind_result($count);
-        $findExistingUserStmt->fetch();
-        $findExistingUserStmt->close();
-
-        // check for existing user
-        if ($count > 0) {
+        $findDuplicateStmt = $db->getConnection()->prepare("
+            SELECT COUNT(*) 
+            FROM (
+                SELECT email FROM users WHERE (email = ? OR phoneNumber = ?) AND userId != ?
+                UNION ALL
+                SELECT email FROM agencies WHERE email = ? OR phoneNumber = ?
+            ) as combined
+        ");
+        $findDuplicateStmt->bind_param("sssss", $email, $phoneNumber, $userId, $email, $phoneNumber);
+        $findDuplicateStmt->execute();
+        $findDuplicateStmt->bind_result($duplicateCount);
+        $findDuplicateStmt->fetch();
+        $findDuplicateStmt->close();
+        if ($duplicateCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "User already exists", "type" => "Error"));
+            echo json_encode(array("message" => "Email or phone number is already in use", "type" => "Error"));
             exit();
         }
 

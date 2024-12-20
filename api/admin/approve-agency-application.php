@@ -71,7 +71,7 @@ if ($db->getConnection()) {
                 SELECT email FROM users WHERE email = ? OR phoneNumber = ?
                 UNION ALL
                 SELECT email FROM agencies WHERE email = ? OR phoneNumber = ? OR name = ?
-            ) AS combined
+            ) as combined
         ");
         $findDuplicateStmt->bind_param("sssss", $email, $phoneNumber, $email, $phoneNumber, $name);
         $findDuplicateStmt->execute();
@@ -123,7 +123,7 @@ if ($db->getConnection()) {
             $deleteJobApplicationsStmt->bind_param("s", $agencyApplication["userId"]);
             $deleteJobApplicationsStmt->execute();
             $deleteJobApplicationsStmt->close();
-            
+
             // commit the transaction
             $connection->commit();
             echo json_encode(array("message" => "Agency has been created", "type" => "Success"));
