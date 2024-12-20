@@ -5,12 +5,12 @@ require_once __DIR__ . "/../../utils/jwt.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
-if (!isset($_POST["userId"]) || is_null($token)) {
+if (!isset($_GET["userId"]) || is_null($token)) {
     http_response_code(400);
     echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
     exit();
 }
-$userId = $_POST["userId"];
+$userId = $_GET["userId"];
 /**
  *  Verify token
  */
