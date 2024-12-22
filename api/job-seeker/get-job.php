@@ -6,12 +6,12 @@ $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
 if (!isset($_GET["userId"]) || is_null($token)) {
     http_response_code(400);
-    echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
+    echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
 if (!isset($_GET["jobId"])) {
     http_response_code(400);
-    echo json_encode(array("message" => "JobId is required", "type" => "Error"));
+    echo json_encode(array("message" => "JobId is required"));
     exit();
 }
 [$userId, $jobId] = [$_GET["userId"], $_GET["jobId"]];
@@ -62,19 +62,19 @@ if ($db->getConnection()) {
             $findExistingJobApplicationStmt->close();
             $job['isFavourite'] = $favouriteCount > 0;
             $job["isApplied"] = $applicationCount > 0;
-            echo json_encode(array("data" => $job, "type" => "Success"));
+            echo json_encode(array("data" => $job));
         } else {
             http_response_code(404);
-            echo json_encode(array("message" => "Job not found", "type" => "Error"));
+            echo json_encode(array("message" => "Job not found"));
         }
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
+        echo json_encode(array("message" => $e->getMessage()));
     } finally {
         $db->close();
     }
 } else {
     http_response_code(500);
-    echo json_encode(array("message" => "Failed to connect to database", "type" => "Error"));
+    echo json_encode(array("message" => "Failed to connect to database"));
     $db->close();
 }

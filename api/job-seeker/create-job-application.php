@@ -9,13 +9,13 @@ $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
 if (!isset($_POST["userId"]) || is_null($token)) {
     http_response_code(400);
-    echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
+    echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
 $result = Validation::validateSchema($_POST, $jobApplicationSchema);
 if ($result !== null) {
     http_response_code(400);
-    echo json_encode(array("message" => $result, "type" => "Error"));
+    echo json_encode(array("message" => $result));
     exit();
 }
 [$userId, $jobId] = [$_POST["userId"], $_POST["jobId"]];
@@ -36,7 +36,7 @@ if ($db->getConnection()) {
         $findExistingUserStmt->close();
         if ($userCount === 0) {
             http_response_code(404);
-            echo json_encode(array("message" => "User not found", "type" => "Error"));
+            echo json_encode(array("message" => "User not found"));
             exit();
         }
 
@@ -49,7 +49,7 @@ if ($db->getConnection()) {
         $findExistingJobStmt->close();
         if ($jobCount === 0) {
             http_response_code(404);
-            echo json_encode(array("message" => "Job not found", "type" => "Error"));
+            echo json_encode(array("message" => "Job not found"));
             exit();
         }
 
@@ -62,7 +62,7 @@ if ($db->getConnection()) {
         $findExistingJobApplicationStmt->close();
         if ($jobApplicationCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "Job Application already submitted", "type" => "Error"));
+            echo json_encode(array("message" => "Job Application already submitted"));
             exit();
         }
 
@@ -71,15 +71,15 @@ if ($db->getConnection()) {
         $createApplicationStmt->bind_param("ss", $userId, $jobId);
         $createApplicationStmt->execute();
         $createApplicationStmt->close();
-        echo json_encode(array("message" => "Job application submitted", "type" => "Success"));
+        echo json_encode(array("message" => "Job application submitted"));
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
+        echo json_encode(array("message" => $e->getMessage()));
     } finally {
         $db->close();
     }
 } else {
     http_response_code(500);
-    echo json_encode(array("message" => "Failed to connect to the database", "type" => "Error"));
+    echo json_encode(array("message" => "Failed to connect to the database"));
     $db->close();
 }

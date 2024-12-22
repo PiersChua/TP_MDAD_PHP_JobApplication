@@ -3,13 +3,14 @@ require_once __DIR__ . "/../../schema/agency-application.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
+require_once __DIR__ . "/../../utils/stringUtils.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
 
 if (!isset($_POST["userId"]) || is_null($token)) {
     http_response_code(400);
-    echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
+    echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
 
@@ -17,27 +18,30 @@ if (!isset($_POST["userId"]) || is_null($token)) {
 $result = Validation::validateSchema($_POST, $agencyApplicationSchema);
 if ($result !== null) {
     http_response_code(400);
-    echo json_encode(array("message" => $result, "type" => "Error"));
+    echo json_encode(array("message" => $result));
     exit();
 }
 
 [$name, $email, $phoneNumber, $address, $userId] = [
     $_POST["name"],
-    $_POST["email"],
+    StringUtils::lowercaseEmail($_POST["email"]),
     $_POST["phoneNumber"],
     !is_null(trim($_POST["address"])) ? trim($_POST["address"]) : null,
     $_POST["userId"]
 ];
 if (!Validation::validateName($name)) {
-    echo json_encode(array("message" => "Invalid name, please type in the correct format", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid name, please type in the correct format"));
     exit();
 }
 if (!Validation::validateEmail($email)) {
-    echo json_encode(array("message" => "Invalid email type, please type in the correct format", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid email type, please type in the correct format"));
     exit();
 }
 if (!Validation::validatePhoneNumber($phoneNumber)) {
-    echo json_encode(array("message" => "Invalid phone number, please type in the correct format", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid phone number, please type in the correct format"));
     exit();
 }
 
@@ -57,7 +61,7 @@ if ($db->getConnection()) {
         $findExistingUserStmt->close();
         if ($userCount === 0) {
             http_response_code(404);
-            echo json_encode(array("message" => "User not found", "type" => "Error"));
+            echo json_encode(array("message" => "User not found"));
             exit();
         }
 
@@ -80,7 +84,7 @@ if ($db->getConnection()) {
 
         if ($duplicateCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "Email, phone number or agency name is already in use", "type" => "Error"));
+            echo json_encode(array("message" => "Email, phone number or agency name is already in use"));
             exit();
         }
 
@@ -88,15 +92,15 @@ if ($db->getConnection()) {
         $createAgencyApplicationStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $userId);
         $createAgencyApplicationStmt->execute();
         $createAgencyApplicationStmt->close();
-        echo json_encode(array("message" => "Agency application submitted", "type" => "Success"));
+        echo json_encode(array("message" => "Agency application submitted"));
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
+        echo json_encode(array("message" => $e->getMessage()));
     } finally {
         $db->close();
     }
 } else {
     http_response_code(500);
-    echo json_encode(array("message" => "Failed to connect to the database", "type" => "Error"));
+    echo json_encode(array("message" => "Failed to connect to the database"));
     $db->close();
 }

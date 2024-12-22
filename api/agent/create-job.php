@@ -6,11 +6,12 @@ require_once __DIR__ . "/../../lib/db.php";
 $result = Validation::validateSchema($_POST, $jobSchema);
 if ($result !== null) {
     http_response_code(400);
-    echo json_encode(array("message" => $result, "type" => "Error"));
+    echo json_encode(array("message" => $result));
     exit();
 }
 if (!isset($_POST["partTimeSalary"]) && !isset($_POST["fullTimeSalary"])) {
-    echo json_encode(array("message" => "At least part-time or full-time salary is required", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "At least part-time or full-time salary is required"));
     exit();
 }
 [$position, $responsibilities, $description, $location, $schedule, $organisation, $partTimeSalary, $fullTimeSalary, $userId] = [
@@ -36,7 +37,7 @@ if ($db->getConnection()) {
         // check if agent exists
         if ($userCount === 0) {
             http_response_code(404);
-            echo json_encode(array("message" => "Agent not found", "type" => "Error"));
+            echo json_encode(array("message" => "Agent not found"));
             exit();
         }
 
@@ -44,10 +45,10 @@ if ($db->getConnection()) {
         $createJobStmt->bind_param("ssssssdds", $position, $responsibilities, $description, $location, $schedule, $organisation, $partTimeSalary, $fullTimeSalary, $userId);
         $createJobStmt->execute();
         $createJobStmt->close();
-        echo json_encode(array("message" => "Job created", "type" => "Success"));
+        echo json_encode(array("message" => "Job created"));
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
+        echo json_encode(array("message" => $e->getMessage()));
     } finally {
         $db->close();
     }

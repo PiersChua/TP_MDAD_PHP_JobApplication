@@ -8,12 +8,12 @@ require_once __DIR__ . "/../../utils/stringUtils.php";
 $result = Validation::validateSchema($_POST, $signUpSchema);
 if ($result !== null) {
     http_response_code(400);
-    echo json_encode(array("message" => $result, "type" => "Error"));
+    echo json_encode(array("message" => $result));
     exit();
 }
 [$fullName, $email, $password, $phoneNumber, $role] = [
     StringUtils::capitalizeName($_POST["fullName"]),
-    $_POST["email"],
+    StringUtils::lowercaseEmail($_POST["email"]),
     $_POST["password"],
     $_POST["phoneNumber"],
     $_POST["role"]
@@ -23,19 +23,23 @@ $hashedPassword =
 
 // check if the role is in ENUM
 if (!in_array($role, $allowedRoles, true)) {
-    echo json_encode(array("message" => "Role does not exist", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "Role does not exist"));
     exit();
 }
 if (!Validation::validateName($fullName)) {
-    echo json_encode(array("message" => "Invalid name, please type in the correct format", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid name, please type in the correct format"));
     exit();
 }
 if (!Validation::validateEmail($email)) {
-    echo json_encode(array("message" => "Invalid email type, please type in the correct format", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid email type, please type in the correct format"));
     exit();
 }
 if (!Validation::validatePhoneNumber($phoneNumber)) {
-    echo json_encode(array("message" => "Invalid phone number, please type in the correct format", "type" => "Error"));
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid phone number, please type in the correct format"));
     exit();
 }
 
@@ -53,7 +57,7 @@ if ($db->getConnection()) {
         // check for existing user
         if ($count > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "User already exists", "type" => "Error"));
+            echo json_encode(array("message" => "User already exists"));
             exit();
         }
 
@@ -61,14 +65,14 @@ if ($db->getConnection()) {
         $createUserStmt->bind_param("sssss", $fullName, $email, $hashedPassword, $phoneNumber, $role);
         $createUserStmt->execute();
         $createUserStmt->close();
-        echo json_encode(array("message" => "User created", "type" => "Success"));
+        echo json_encode(array("message" => "User created"));
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
+        echo json_encode(array("message" => $e->getMessage()));
     } finally {
         $db->close();
     }
 } else {
     http_response_code(500);
-    echo json_encode(array("message" => "Failed to connect to database", "type" => "Error"));
+    echo json_encode(array("message" => "Failed to connect to database"));
 }

@@ -6,7 +6,7 @@ $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
 if (!isset($_GET["userId"]) || is_null($token)) {
     http_response_code(400);
-    echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
+    echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
 $userId = $_GET["userId"];
@@ -29,15 +29,15 @@ if ($db->getConnection()) {
         $result = $findFavouritesStmt->get_result();
         $findFavouritesStmt->close();
         $favouriteJobs = $result->fetch_all(MYSQLI_ASSOC); // Fetches all rows as an associative array
-        echo json_encode(array("data" => $favouriteJobs, "type" => "Success"));
+        echo json_encode(array("data" => $favouriteJobs));
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
+        echo json_encode(array("message" => $e->getMessage()));
     } finally {
         $db->close();
     }
 } else {
     http_response_code(500);
-    echo json_encode(array("message" => "Failed to connect to database", "type" => "Error"));
+    echo json_encode(array("message" => "Failed to connect to database"));
     $db->close();
 }

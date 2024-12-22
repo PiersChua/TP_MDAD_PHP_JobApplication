@@ -9,16 +9,16 @@ $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
 if (!isset($_POST["userId"]) || is_null($token)) {
     http_response_code(400);
-    echo json_encode(array("message" => "UserId and Token is required", "type" => "Error"));
+    echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
 $result = Validation::validateSchema($_POST, $updateUserSchema);
 if ($result !== null) {
     http_response_code(400);
-    echo json_encode(array("message" => $result, "type" => "Error"));
+    echo json_encode(array("message" => $result));
     exit();
 }
-[$userId, $fullName, $email, $phoneNumber] = [$_POST["userId"], StringUtils::capitalizeName($_POST["fullName"]), $_POST["email"], $_POST["phoneNumber"]];
+[$userId, $fullName, $email, $phoneNumber] = [$_POST["userId"], StringUtils::capitalizeName($_POST["fullName"]), StringUtils::lowercaseEmail($_POST["email"]), $_POST["phoneNumber"]];
 /**
  *  Verify token
  */
@@ -42,7 +42,7 @@ if ($db->getConnection()) {
         $findDuplicateStmt->close();
         if ($duplicateCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "Email or phone number is already in use", "type" => "Error"));
+            echo json_encode(array("message" => "Email or phone number is already in use"));
             exit();
         }
 
@@ -50,15 +50,15 @@ if ($db->getConnection()) {
         $updateUserStmt->bind_param("ssss", $fullName, $email, $phoneNumber, $userId);
         $updateUserStmt->execute();
         $updateUserStmt->close();
-        echo json_encode(array("message" => "Profile updated", "type" => "Success"));
+        echo json_encode(array("message" => "Profile updated"));
     } catch (Exception $e) {
         http_response_code(500);
-        echo json_encode(array("message" => $e->getMessage(), "type" => "Error"));
+        echo json_encode(array("message" => $e->getMessage()));
     } finally {
         $db->close();
     }
 } else {
     http_response_code(500);
-    echo json_encode(array("message" => "Failed to connect to database", "type" => "Error"));
+    echo json_encode(array("message" => "Failed to connect to database"));
     $db->close();
 }

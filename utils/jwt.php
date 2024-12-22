@@ -62,7 +62,7 @@ class Jwt
                 $matches
             ) !== 1
         ) {
-            return array("message" => "Invalid token format", "type" => "Error");
+            return array("message" => "Invalid token format");
         }
         $signature = hash_hmac(
             "sha256",
