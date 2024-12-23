@@ -20,6 +20,22 @@ $signUpSchema =    [
         "required" => true,
         "message" => "Role is required"
     ],
+    "dateOfBirth" => [
+        "required" => true,
+        "message" => "Date of Birth is required"
+    ],
+    "gender" => [
+        "required" => true,
+        "message" => "Gender is required"
+    ],
+    "race" => [
+        "required" => true,
+        "message" => "Race is required"
+    ],
+    "nationality" => [
+        "required" => true,
+        "message" => "Nationaliy is required"
+    ]
 ];
 
 $loginSchema = [

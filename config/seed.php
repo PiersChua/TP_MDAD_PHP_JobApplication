@@ -3,33 +3,34 @@ require_once __DIR__ . "/../lib/db.php";
 
 $db = Db::getInstance();
 
+
 $sql = "
-INSERT INTO jobs (
-    position,
-    responsibilities,
-    description,
-    location,
-    schedule,
-    organisation,
-    partTimeSalary,
-    fullTimeSalary,
-    userId
-) VALUES (
-    'Hotel Banquet Waiter',
-    'Assist with event preparation by setting up tables, chairs, and decorations according to the event’s specifications. During the banquet, you will attend to guest requests promptly, ensuring their needs are met with professionalism and courtesy. Maintain cleanliness and organization throughout the event, including clearing plates, refilling drinks, and keeping the banquet area tidy. Collaborate closely with kitchen staff to ensure timely and accurate food and beverage service, addressing any issues that arise promptly to create a positive and seamless guest experience. 
-    After the event, assist with post-event tasks such as clearing tables, resetting the banquet space, and ensuring all equipment and supplies are accounted for. Uphold hygiene and safety standards throughout the event to maintain a clean and welcoming environment. Your role will be pivotal in contributing to the success of the event, leaving guests with a lasting impression of excellent service and hospitality.',
-    'Royal Plaza is seeking enthusiastic and customer-focused waiters to deliver exceptional dining experiences. Responsibilities include taking orders, serving food and beverages, ensuring table cleanliness, and attending to guest requests promptly. Join our team and be part of a dynamic environment committed to excellence in hospitality!
-    Attire Requirement:
-    Full black with flat leather shoes.
-    No visible tattoos or colored hair.',
-    'Orchard',
-    'Flexible working schedule from Monday - Friday. 8 am to 4pm. Min 3 working days per week',
-    'Royal Plaza',
-    12.00,
-    NULL,
-    'd058103b-bd30-11ef-a7dc-88a4c25ac32d'
-);
+
+INSERT INTO users (fullName, email, password, phoneNumber, dateOfBirth, role, gender, race, nationality)
+VALUES
+    ('Alice Johnson', 'alice@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '1234567890', '1990-01-01', 'Job Seeker', 'Female', 'Chinese', 'Singaporean'),
+    ('Bob Smith', 'bob@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '1234567891', '1985-06-15', 'Agent', 'Male', 'Malay', 'PR'),
+    ('Charlie Brown', 'charlie@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '1234567892', '1980-03-22', 'Agency Admin', 'Male', 'Indian', 'Singaporean'),
+    ('Diana Prince', 'diana@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '1234567893', '1995-09-10', 'Admin', 'Female', 'Others', 'Singaporean');
+
+
+INSERT INTO agencies (name, email, phoneNumber, address, userId)
+VALUES
+    ('Tech Innovations', 'tech@example.com', '9876543210', '123 Tech Park', (SELECT userId FROM users WHERE email = 'charlie@example.com')),
+    ('Green Solutions', 'green@example.com', '9876543211', '456 Green Lane', (SELECT userId FROM users WHERE email = 'charlie@example.com'));
+
+
+UPDATE users
+SET agencyId = (SELECT agencyId FROM agencies WHERE name = 'Tech Innovations')
+WHERE email = 'bob@example.com';
+
+
+INSERT INTO jobs (position, responsibilities, description, location, schedule, organisation, partTimeSalary, fullTimeSalary, userId)
+VALUES
+    ('Software Developer', 'Develop and maintain software.', 'Exciting opportunity to work on cutting-edge projects.', 'Tech Park', 'Mon-Fri 9am-6pm', 'Tech Innovations', 25.00, 5000.00, (SELECT userId FROM users WHERE email = 'bob@example.com')),
+    ('Project Manager', 'Manage and oversee projects.', 'Lead teams to success in various projects.', 'Green Lane', 'Mon-Fri 9am-5pm', 'Green Solutions', NULL, 7000.00, (SELECT userId FROM users WHERE email = 'bob@example.com'));
 ";
+
 if ($db->getConnection()) {
     if (mysqli_multi_query($db->getConnection(), $sql)) {
         echo "Data seeded successfully!";

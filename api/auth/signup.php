@@ -11,12 +11,16 @@ if ($result !== null) {
     echo json_encode(array("message" => $result));
     exit();
 }
-[$fullName, $email, $password, $phoneNumber, $role] = [
+[$fullName, $email, $password, $phoneNumber, $role, $dateOfBirth, $gender, $race, $nationality] = [
     StringUtils::capitalizeName($_POST["fullName"]),
     StringUtils::lowercaseEmail($_POST["email"]),
     $_POST["password"],
     $_POST["phoneNumber"],
-    $_POST["role"]
+    $_POST["role"],
+    $_POST["dateOfBirth"],
+    $_POST["gender"],
+    $_POST["race"],
+    $_POST["nationality"],
 ];
 $hashedPassword =
     password_hash($_POST["password"], PASSWORD_BCRYPT);
@@ -61,8 +65,8 @@ if ($db->getConnection()) {
             exit();
         }
 
-        $createUserStmt = $db->getConnection()->prepare("INSERT INTO users (fullName, email, password, phoneNumber, role) VALUES (?,?,?,?,?)");
-        $createUserStmt->bind_param("sssss", $fullName, $email, $hashedPassword, $phoneNumber, $role);
+        $createUserStmt = $db->getConnection()->prepare("INSERT INTO users (fullName, email, password, phoneNumber, role, dateOfBirth, gender, race, nationality) VALUES (?,?,?,?,?,?,?,?,?)");
+        $createUserStmt->bind_param("sssssssss", $fullName, $email, $hashedPassword, $phoneNumber, $role, $dateOfBirth, $gender, $race, $nationality);
         $createUserStmt->execute();
         $createUserStmt->close();
         echo json_encode(array("message" => "User created"));
