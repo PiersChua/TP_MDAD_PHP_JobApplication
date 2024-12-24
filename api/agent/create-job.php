@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../../schema/job.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
+require_once __DIR__ . "/../../utils/jwt.php";
 
 $result = Validation::validateSchema($_POST, $jobSchema);
 if ($result !== null) {
@@ -25,6 +26,8 @@ if (!isset($_POST["partTimeSalary"]) && !isset($_POST["fullTimeSalary"])) {
     $_POST["fullTimeSalary"] ?? null,
     $_POST["userId"] // todo: change this to extract the userId from jwt token from headers
 ];
+$payload = Jwt::decode($token);
+Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = DB::getInstance();
 if ($db->getConnection()) {
     try {
