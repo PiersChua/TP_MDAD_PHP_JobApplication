@@ -18,7 +18,33 @@ if ($result !== null) {
     echo json_encode(array("message" => $result));
     exit();
 }
-[$userId, $fullName, $email, $phoneNumber] = [$_POST["userId"], StringUtils::capitalizeName($_POST["fullName"]), StringUtils::lowercaseEmail($_POST["email"]), $_POST["phoneNumber"]];
+
+[$userId, $fullName, $email, $phoneNumber, $dateOfBirth, $gender, $race, $nationality] = [
+    $_POST["userId"],
+    StringUtils::capitalizeName($_POST["fullName"]),
+    StringUtils::lowercaseEmail($_POST["email"]),
+    $_POST["phoneNumber"],
+    $_POST["dateOfBirth"],
+    $_POST["gender"],
+    $_POST["race"],
+    $_POST["nationality"],
+
+];
+if (!in_array($gender, $allowedGender, true)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Gender does not exist"));
+    exit();
+}
+if (!in_array($race, $allowedRace, true)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Race does not exist"));
+    exit();
+}
+if (!in_array($nationality, $allowedNationality, true)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Nationality does not exist"));
+    exit();
+}
 /**
  *  Verify token
  */
@@ -46,8 +72,8 @@ if ($db->getConnection()) {
             exit();
         }
 
-        $updateUserStmt = $db->getConnection()->prepare("UPDATE users SET fullName=?,email=?,phoneNumber=? WHERE userId=?");
-        $updateUserStmt->bind_param("ssss", $fullName, $email, $phoneNumber, $userId);
+        $updateUserStmt = $db->getConnection()->prepare("UPDATE users SET fullName=?,email=?,phoneNumber=?,dateOfBirth=?,gender=?,race=?,nationality=? WHERE userId=?");
+        $updateUserStmt->bind_param("ssssssss", $fullName, $email, $phoneNumber, $dateOfBirth, $gender, $race, $nationality, $userId);
         $updateUserStmt->execute();
         $updateUserStmt->close();
         echo json_encode(array("message" => "Profile updated"));

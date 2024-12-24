@@ -1,5 +1,5 @@
 <?php
-$allowedRoles = ["Job Seeker", "Admin"];
+
 require_once __DIR__ . "/../../schema/user.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
@@ -51,17 +51,22 @@ $db = Db::getInstance();
 
 if ($db->getConnection()) {
     try {
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE email=? OR phoneNumber=?");
-        $findExistingUserStmt->bind_param("ss", $email, $phoneNumber);
-        $findExistingUserStmt->execute();
-        $findExistingUserStmt->bind_result($count);
-        $findExistingUserStmt->fetch();
-        $findExistingUserStmt->close();
-
-        // check for existing user
-        if ($count > 0) {
+        $findDuplicateStmt = $db->getConnection()->prepare("
+            SELECT COUNT(*) 
+            FROM (
+                SELECT email FROM users WHERE email = ? OR phoneNumber = ?
+                UNION ALL
+                SELECT email FROM agencies WHERE email = ? OR phoneNumber = ?
+            ) as combined
+        ");
+        $findDuplicateStmt->bind_param("sssss", $email, $phoneNumber, $email, $phoneNumber);
+        $findDuplicateStmt->execute();
+        $findDuplicateStmt->bind_result($duplicateCount);
+        $findDuplicateStmt->fetch();
+        $findDuplicateStmt->close();
+        if ($duplicateCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "User already exists"));
+            echo json_encode(array("message" => "Email or phone number is already in use"));
             exit();
         }
 
