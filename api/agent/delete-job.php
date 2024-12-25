@@ -12,27 +12,15 @@ if (!isset($_POST["userId"]) || is_null($token)) {
     exit();
 }
 
-$result = Validation::validateSchema($_POST, $jobSchema);
+$result = Validation::validateSchema($_POST, $deleteJobSchema);
 if ($result !== null) {
     http_response_code(400);
     echo json_encode(array("message" => $result));
     exit();
 }
-if (!isset($_POST["partTimeSalary"]) && !isset($_POST["fullTimeSalary"])) {
-    http_response_code(400);
-    echo json_encode(array("message" => "At least part-time or full-time salary is required"));
-    exit();
-}
-[$position, $responsibilities, $description, $location, $schedule, $organisation, $partTimeSalary, $fullTimeSalary, $userId] = [
-    $_POST["position"],
-    $_POST["responsibilities"],
-    $_POST["description"],
-    $_POST["location"],
-    $_POST["schedule"],
-    $_POST["organisation"],
-    $_POST["partTimeSalary"] ?? null,
-    $_POST["fullTimeSalary"] ?? null,
-    $_POST["userId"]
+[$userId, $jobId] = [
+    $_POST["userId"],
+    $_POST["jobId"]
 ];
 $payload = Jwt::decode($token);
 Jwt::verifyPayloadWithUserId($payload, $userId);
@@ -52,11 +40,11 @@ if ($db->getConnection()) {
             exit();
         }
 
-        $createJobStmt = $db->getConnection()->prepare("INSERT INTO jobs (position, responsibilities, description, location, schedule, organisation, partTimeSalary, fullTimeSalary, userId) VALUES (?,?,?,?,?,?,?,?,?)");
-        $createJobStmt->bind_param("ssssssdds", $position, $responsibilities, $description, $location, $schedule, $organisation, $partTimeSalary, $fullTimeSalary, $userId);
-        $createJobStmt->execute();
-        $createJobStmt->close();
-        echo json_encode(array("message" => "Job created"));
+        $deleteJobStmt = $db->getConnection()->prepare("DELETE FROM jobs WHERE jobId=? AND userId=?");
+        $deleteJobStmt->bind_param("ss", $jobId, $userId);
+        $deleteJobStmt->execute();
+        $deleteJobStmt->close();
+        echo json_encode(array("message" => "Job deleted"));
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(array("message" => $e->getMessage()));
