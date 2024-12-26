@@ -24,10 +24,11 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         $findJobApplicationsStmt = $db->getConnection()->prepare("
-        SELECT users.fullName as user_full_name, users.email as user_email,users.phoneNumber as user_phone_number, users.userId FROM job_applications
+        SELECT users.fullName as user_full_name, users.email as user_email,users.phoneNumber as user_phone_number, users.userId, job_applications.status, job_applications.updatedAt FROM job_applications
         INNER JOIN jobs ON jobs.jobId = job_applications.jobId
         INNER JOIN users ON job_applications.userId = users.userId
         WHERE job_applications.jobId=? AND jobs.userId=?
+        ORDER BY job_applications.createdAt DESC
         ");
         $findJobApplicationsStmt->bind_param("ss", $jobId, $userId);
         $findJobApplicationsStmt->execute();
