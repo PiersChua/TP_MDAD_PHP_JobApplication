@@ -33,7 +33,7 @@ if ($db->getConnection()) {
             $findJobsStmt->bind_param("si", $userId, $limit);
         } else {
             $findJobsStmt = $db->getConnection()->prepare("
-            SELECT jobs.*, COUNT(favourite_jobs.userId) AS favourite_job_count,  COUNT(CASE WHEN job_applications.status = 'PENDING' THEN job_applications.userId END) AS job_application_count FROM jobs 
+            SELECT jobs.*, COUNT(favourite_jobs.userId) AS favourite_job_count, COUNT(CASE WHEN job_applications.status = 'PENDING' THEN job_applications.userId END) AS job_application_count FROM jobs 
             LEFT JOIN favourite_jobs ON jobs.jobId = favourite_jobs.jobId
             LEFT JOIN job_applications ON jobs.jobId = job_applications.jobId
             WHERE jobs.userId=?
