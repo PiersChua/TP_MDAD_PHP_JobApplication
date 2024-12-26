@@ -28,7 +28,7 @@ if ($db->getConnection()) {
             WHERE jobs.userId=?
             GROUP BY jobs.jobId
             LIMIT ?
-            ORDER BY jobs.createdAt DESC
+            ORDER BY jobs.updatedAt DESC
             ");
             $findJobsStmt->bind_param("si", $userId, $limit);
         } else {
@@ -38,7 +38,7 @@ if ($db->getConnection()) {
             LEFT JOIN job_applications ON jobs.jobId = job_applications.jobId
             WHERE jobs.userId=?
             GROUP BY jobs.jobId
-            ORDER BY jobs.createdAt DESC
+            ORDER BY jobs.updatedAt DESC
             ");
             $findJobsStmt->bind_param("s", $userId);
         }

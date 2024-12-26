@@ -42,31 +42,31 @@ if ($db->getConnection()) {
         $result = $findExistingJobStmt->get_result();
         $findExistingJobStmt->close();
         $job = $result->fetch_assoc(); // fetches a single row
-        if ($job !== null) {
-            $findExistingFavouriteStmt = $db->getConnection()->prepare("
-            SELECT COUNT(*) FROM favourite_jobs WHERE userId = ? AND jobId = ?
-        ");
-            $findExistingFavouriteStmt->bind_param("ss", $userId, $jobId);
-            $findExistingFavouriteStmt->execute();
-            $findExistingFavouriteStmt->bind_result($favouriteCount);
-            $findExistingFavouriteStmt->fetch();
-            $findExistingFavouriteStmt->close();
-
-            $findExistingJobApplicationStmt = $db->getConnection()->prepare("
-            SELECT COUNT(*) FROM job_applications WHERE userId = ? AND jobId = ?
-        ");
-            $findExistingJobApplicationStmt->bind_param("ss", $userId, $jobId);
-            $findExistingJobApplicationStmt->execute();
-            $findExistingJobApplicationStmt->bind_result($applicationCount);
-            $findExistingJobApplicationStmt->fetch();
-            $findExistingJobApplicationStmt->close();
-            $job['isFavourite'] = $favouriteCount > 0;
-            $job["isApplied"] = $applicationCount > 0;
-            echo json_encode(array("data" => $job));
-        } else {
+        if ($job === null) {
             http_response_code(404);
             echo json_encode(array("message" => "Job not found"));
+            exit();
         }
+        $findExistingFavouriteStmt = $db->getConnection()->prepare("
+            SELECT COUNT(*) FROM favourite_jobs WHERE userId = ? AND jobId = ?
+        ");
+        $findExistingFavouriteStmt->bind_param("ss", $userId, $jobId);
+        $findExistingFavouriteStmt->execute();
+        $findExistingFavouriteStmt->bind_result($favouriteCount);
+        $findExistingFavouriteStmt->fetch();
+        $findExistingFavouriteStmt->close();
+
+        $findExistingJobApplicationStmt = $db->getConnection()->prepare("
+            SELECT COUNT(*) FROM job_applications WHERE userId = ? AND jobId = ?
+        ");
+        $findExistingJobApplicationStmt->bind_param("ss", $userId, $jobId);
+        $findExistingJobApplicationStmt->execute();
+        $findExistingJobApplicationStmt->bind_result($applicationCount);
+        $findExistingJobApplicationStmt->fetch();
+        $findExistingJobApplicationStmt->close();
+        $job['isFavourite'] = $favouriteCount > 0;
+        $job["isApplied"] = $applicationCount > 0;
+        echo json_encode(array("data" => $job));
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(array("message" => $e->getMessage()));

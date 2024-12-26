@@ -19,29 +19,23 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT fullName,email,dateOfBirth,phoneNumber,race,nationality,gender from users WHERE userId=?");
+        $findExistingUserStmt = $db->getConnection()->prepare("
+        SELECT users.*,
+        agencies.name as agency_name, agencies.email as agency_email, agencies.phoneNumber as agency_phone_number, agencies.address as agency_address
+        from users 
+        LEFT JOIN agencies ON users.agencyId=agencies.agencyId
+        WHERE users.userId=?");
         $findExistingUserStmt->bind_param("s", $userId);
         $findExistingUserStmt->execute();
-        $findExistingUserStmt->bind_result($fullName, $email, $dateOfBirth, $phoneNumber, $race, $nationality, $gender);
-
-        // fetch returns true if user exist 
-        if ($findExistingUserStmt->fetch()) {
-            $userDetails = array(
-                "fullName" => $fullName,
-                "email" => $email,
-                "dateOfBirth" => $dateOfBirth,
-                "phoneNumber" => $phoneNumber,
-                "race" => $race,
-                "nationality" => $nationality,
-                "gender" => $gender,
-            );
-
-            echo json_encode($userDetails);
-        } else {
+        $result = $findExistingUserStmt->get_result();
+        $findExistingUserStmt->close();
+        $user = $result->fetch_assoc();
+        if ($user === null) {
             http_response_code(404);
             echo json_encode(array("message" => "User not found"));
+            exit();
         }
-        $findExistingUserStmt->close();
+        echo json_encode($user);
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(array("message" => $e->getMessage()));
