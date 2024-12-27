@@ -55,21 +55,25 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         $findDuplicateStmt = $db->getConnection()->prepare("
-            SELECT COUNT(*) 
-            FROM (
-                SELECT email FROM users WHERE (email = ? OR phoneNumber = ?) AND userId != ?
-                UNION ALL
-                SELECT email FROM agencies WHERE email = ? OR phoneNumber = ?
-            ) as combined
+           SELECT 
+            (SELECT COUNT(*) FROM users WHERE email = ?)
+            + (SELECT COUNT(*) FROM agencies WHERE email = ?),
+            (SELECT COUNT(*) FROM users WHERE phoneNumber = ?)
+            + (SELECT COUNT(*) FROM agencies WHERE phoneNumber = ?)
         ");
-        $findDuplicateStmt->bind_param("sssss", $email, $phoneNumber, $userIdToBeUpdated, $email, $phoneNumber);
+        $findDuplicateStmt->bind_param("ssss", $email, $email, $phoneNumber, $phoneNumber);
         $findDuplicateStmt->execute();
-        $findDuplicateStmt->bind_result($duplicateCount);
+        $findDuplicateStmt->bind_result($emailCount, $phoneNumberCount);
         $findDuplicateStmt->fetch();
         $findDuplicateStmt->close();
-        if ($duplicateCount > 0) {
+        if ($emailCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "Email or phone number is already in use"));
+            echo json_encode(array("message" => "Email is already in use"));
+            exit();
+        }
+        if ($phoneNumberCount > 0) {
+            http_response_code(400);
+            echo json_encode(array("message" => "Phone Number is already in use"));
             exit();
         }
 

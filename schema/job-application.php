@@ -1,5 +1,5 @@
 <?php
-$jobApplicationSchema = [
+$createJobApplicationSchema = [
     "userId" => [
         "required" => true,
         "message" => "UserId is required",
@@ -22,5 +22,16 @@ $updateJobApplicationSchema = [
         "required" => true,
         "message" => "Status is required"
     ]
+];
+
+$getJobApplicationsSchema = [
+    "jobId" => [
+        "required" => true,
+        "message" => "JobId is required",
+    ],
+    "agentUserId" => [
+        "required" => true,
+        "message" => "AgentUserId is required",
+    ],
 ];
 $validStatuses = ['ACCEPTED', 'REJECTED'];

@@ -1,6 +1,6 @@
 <?php
 
-$agencyApplicationSchema = [
+$createAgencyApplicationSchema = [
     "name" => [
         "required" => "true",
         "message" => "Agency Name is required",

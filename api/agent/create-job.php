@@ -12,7 +12,7 @@ if (!isset($_POST["userId"]) || is_null($token)) {
     exit();
 }
 
-$result = Validation::validateSchema($_POST, $jobSchema);
+$result = Validation::validateSchema($_POST, $createJobSchema);
 if ($result !== null) {
     http_response_code(400);
     echo json_encode(array("message" => $result));

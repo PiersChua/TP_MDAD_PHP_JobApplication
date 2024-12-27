@@ -12,7 +12,7 @@ if (!isset($_POST["userId"]) || is_null($token)) {
     echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
-$result = Validation::validateSchema($_POST, $jobApplicationSchema);
+$result = Validation::validateSchema($_POST, $createJobApplicationSchema);
 if ($result !== null) {
     http_response_code(400);
     echo json_encode(array("message" => $result));

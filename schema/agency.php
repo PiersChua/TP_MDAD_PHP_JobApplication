@@ -13,7 +13,6 @@ $updateAgencySchema = [
         "message" => "Phone Number is required",
     ],
     "address" => [
-        "required" => true,
-        "message" => "Address is required",
+        "required" => false,
     ]
 ];

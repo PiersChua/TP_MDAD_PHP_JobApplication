@@ -1,6 +1,6 @@
 <?php
 
-$jobSchema = [
+$createJobSchema = [
     "position" => [
         "required" => true,
         "message" => "Position is required"
@@ -74,16 +74,29 @@ $updateJobSchema
         ],
         "agentUserId" => [
             "required" => true,
-            "message" => "AgentUserId is required"
+            "message" => "AgentUserId is required" // The userid of the agent who is managing the job
         ],
     ];
 $deleteJobSchema = [
     "jobId" => [
         "required" => true,
-        "message" => "jobId is required",
+        "message" => "JobId is required",
     ],
     "agentUserId" => [
         "required" => true,
-        "message" => "AgentUserId is required"
+        "message" => "AgentUserId is required" // The userid of the agent who is managing the job
+    ],
+];
+
+$getJobSchema = [
+    "jobId" => [
+        "required" => true,
+        "message" => "JobId is required",
+    ],
+];
+$getJobsSchema = [
+    "agentUserId" => [
+        "required" => true,
+        "message" => "AgentUserId is required",
     ],
 ];

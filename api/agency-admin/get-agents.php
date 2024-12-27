@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
+require_once __DIR__ . "/../../schema/user.php";
+require_once __DIR__ . "/../../utils/validation.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -9,7 +11,13 @@ if (!isset($_GET["userId"]) || is_null($token)) {
     echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
-$userId = $_GET["userId"];
+$result = Validation::validateSchema($_GET, $getAgentsSchema);
+if ($result !== null) {
+    http_response_code(400);
+    echo json_encode(array("message" => $result));
+    exit();
+}
+[$userId, $agencyAdminUserId] = [$_GET["userId"], $_GET["agencyAdminUserId"]];
 /**
  *  Verify token
  */
@@ -19,7 +27,7 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         $findExistingAgencyAdminStmt = $db->getConnection()->prepare("SELECT agencyId from agencies WHERE userId=?");
-        $findExistingAgencyAdminStmt->bind_param("s", $userId);
+        $findExistingAgencyAdminStmt->bind_param("s", $agencyAdminUserId);
         $findExistingAgencyAdminStmt->execute();
         $findExistingAgencyAdminStmt->bind_result($agencyId);
         $findExistingAgencyAdminStmt->fetch();

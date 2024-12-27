@@ -87,3 +87,17 @@ $updateUserSchema = [
         "message" => "UserIdToBeUpdated is required"
     ]
 ];
+
+$getApplicantsSchema = [
+    "applicantUserId" => [
+        "required" => true,
+        "message" => "ApplicantUserId is required"
+    ]
+];
+
+$getAgentsSchema = [
+    "agencyAdminUserId" => [
+        "required" => true,
+        "message" => "AgencyAdminUserId is required"
+    ]
+];

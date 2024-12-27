@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
+require_once __DIR__ . "/../../utils/validation.php";
+require_once __DIR__ . "/../../schema/job.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -9,9 +11,10 @@ if (!isset($_GET["userId"]) || is_null($token)) {
     echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
-if (!isset($_GET["jobId"])) {
+$result = Validation::validateSchema($_GET, $getJobSchema);
+if ($result !== null) {
     http_response_code(400);
-    echo json_encode(array("message" => "JobId is required"));
+    echo json_encode(array("message" => $result));
     exit();
 }
 [$userId, $jobId] = [$_GET["userId"], $_GET["jobId"]];
