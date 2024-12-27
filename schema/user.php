@@ -80,6 +80,10 @@ $updateUserSchema = [
     ],
     "nationality" => [
         "required" => true,
-        "message" => "Nationaliy is required"
+        "message" => "Nationality is required"
+    ],
+    "userIdToBeUpdated" => [
+        "required" => true,
+        "message" => "UserIdToBeUpdated is required"
     ]
 ];

@@ -14,7 +14,12 @@ if (!isset($_GET["jobId"])) {
     echo json_encode(array("message" => "JobId is required"));
     exit();
 }
-[$userId, $jobId] = [$_GET["userId"], $_GET["jobId"]];
+if (!isset($_GET["agentUserId"])) {
+    http_response_code(400);
+    echo json_encode(array("message" => "AgentUserId is required"));
+    exit();
+}
+[$userId, $jobId, $agentUserId] = [$_GET["userId"], $_GET["jobId"], $_GET["agentUserId"]];
 /**
  *  Verify token
  */
@@ -30,7 +35,7 @@ if ($db->getConnection()) {
         WHERE job_applications.jobId=? AND jobs.userId=?
         ORDER BY job_applications.createdAt DESC
         ");
-        $findJobApplicationsStmt->bind_param("ss", $jobId, $userId);
+        $findJobApplicationsStmt->bind_param("ss", $jobId, $agentUserId);
         $findJobApplicationsStmt->execute();
         $result = $findJobApplicationsStmt->get_result();
         $findJobApplicationsStmt->close();

@@ -31,6 +31,9 @@ $jobSchema = [
     "fullTimeSalary" => [
         "required" => false,
     ],
+    "agentUserId" => [
+        "required" => false,
+    ],
 ];
 
 $updateJobSchema
@@ -68,15 +71,19 @@ $updateJobSchema
         "jobId" => [
             "required" => true,
             "message" => "JobId is required"
-        ]
+        ],
+        "agentUserId" => [
+            "required" => true,
+            "message" => "AgentUserId is required"
+        ],
     ];
 $deleteJobSchema = [
-    "userId" => [
-        "required" => true,
-        "message" => "UserId is required",
-    ],
     "jobId" => [
         "required" => true,
         "message" => "jobId is required",
-    ]
+    ],
+    "agentUserId" => [
+        "required" => true,
+        "message" => "AgentUserId is required"
+    ],
 ];

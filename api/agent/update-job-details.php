@@ -23,7 +23,7 @@ if (!isset($_POST["partTimeSalary"]) && !isset($_POST["fullTimeSalary"])) {
     echo json_encode(array("message" => "At least part-time or full-time salary is required"));
     exit();
 }
-[$position, $responsibilities, $description, $location, $schedule, $organisation, $partTimeSalary, $fullTimeSalary, $userId, $jobId] = [
+[$position, $responsibilities, $description, $location, $schedule, $organisation, $partTimeSalary, $fullTimeSalary, $userId, $jobId, $agentUserId] = [
     $_POST["position"],
     $_POST["responsibilities"],
     $_POST["description"],
@@ -34,6 +34,7 @@ if (!isset($_POST["partTimeSalary"]) && !isset($_POST["fullTimeSalary"])) {
     $_POST["fullTimeSalary"] ?? null,
     $_POST["userId"],
     $_POST["jobId"],
+    $_POST["agentUserId"]
 ];
 /**
  *  Verify token
@@ -44,7 +45,7 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Agent'");
-        $findExistingUserStmt->bind_param("s", $userId);
+        $findExistingUserStmt->bind_param("s", $agentUserId);
         $findExistingUserStmt->execute();
         $findExistingUserStmt->bind_result($userCount);
         $findExistingUserStmt->fetch();
@@ -57,7 +58,7 @@ if ($db->getConnection()) {
         }
 
         $findExistingJobStmt = $db->getConnection()->prepare("SELECT COUNT(*) from jobs WHERE jobId=? AND userId=?");
-        $findExistingJobStmt->bind_param("ss", $jobId, $userId);
+        $findExistingJobStmt->bind_param("ss", $jobId, $agentUserId);
         $findExistingJobStmt->execute();
         $findExistingJobStmt->bind_result($userCount);
         $findExistingJobStmt->fetch();

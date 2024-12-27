@@ -18,9 +18,10 @@ if ($result !== null) {
     echo json_encode(array("message" => $result));
     exit();
 }
-[$userId, $jobId] = [
+[$userId, $jobId, $agentUserId] = [
     $_POST["userId"],
-    $_POST["jobId"]
+    $_POST["jobId"],
+    $_POST["agentUserId"],
 ];
 $payload = Jwt::decode($token);
 Jwt::verifyPayloadWithUserId($payload, $userId);
@@ -28,7 +29,7 @@ $db = DB::getInstance();
 if ($db->getConnection()) {
     try {
         $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Agent'");
-        $findExistingUserStmt->bind_param("s", $userId);
+        $findExistingUserStmt->bind_param("s", $agentUserId);
         $findExistingUserStmt->execute();
         $findExistingUserStmt->bind_result($userCount);
         $findExistingUserStmt->fetch();
@@ -41,7 +42,7 @@ if ($db->getConnection()) {
         }
 
         $deleteJobStmt = $db->getConnection()->prepare("DELETE FROM jobs WHERE jobId=? AND userId=?");
-        $deleteJobStmt->bind_param("ss", $jobId, $userId);
+        $deleteJobStmt->bind_param("ss", $jobId, $agentUserId);
         $deleteJobStmt->execute();
         $deleteJobStmt->close();
         echo json_encode(array("message" => "Job deleted"));

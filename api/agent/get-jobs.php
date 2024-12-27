@@ -9,7 +9,12 @@ if (!isset($_GET["userId"]) || is_null($token)) {
     echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
-$userId = $_GET["userId"];
+if (!isset($_GET["agentUserId"])) {
+    http_response_code(400);
+    echo json_encode(array("message" => "AgentUserId is required"));
+    exit();
+}
+[$userId, $agentUserId] = [$_GET["userId"], $_GET["agentUserId"]];
 /**
  *  Verify token
  */
@@ -30,7 +35,7 @@ if ($db->getConnection()) {
             LIMIT ?
             ORDER BY jobs.updatedAt DESC
             ");
-            $findJobsStmt->bind_param("si", $userId, $limit);
+            $findJobsStmt->bind_param("si", $agentUserId, $limit);
         } else {
             $findJobsStmt = $db->getConnection()->prepare("
             SELECT jobs.*, COUNT(favourite_jobs.userId) AS favourite_job_count, COUNT(CASE WHEN job_applications.status = 'PENDING' THEN job_applications.userId END) AS job_application_count FROM jobs 
@@ -40,7 +45,7 @@ if ($db->getConnection()) {
             GROUP BY jobs.jobId
             ORDER BY jobs.updatedAt DESC
             ");
-            $findJobsStmt->bind_param("s", $userId);
+            $findJobsStmt->bind_param("s", $agentUserId);
         }
         $findJobsStmt->execute();
         $result = $findJobsStmt->get_result();
