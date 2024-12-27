@@ -38,11 +38,11 @@ if ($db->getConnection()) {
         $findDuplicateStmt = $db->getConnection()->prepare("
            SELECT 
             (SELECT COUNT(*) FROM users WHERE email = ?)
-            + (SELECT COUNT(*) FROM agencies WHERE email = ?),
+            + (SELECT COUNT(*) FROM agencies WHERE email = ? AND userId!=?),
             (SELECT COUNT(*) FROM users WHERE phoneNumber = ?)
-            + (SELECT COUNT(*) FROM agencies WHERE phoneNumber = ?)
+            + (SELECT COUNT(*) FROM agencies WHERE phoneNumber = ? AND userId!=?)
         ");
-        $findDuplicateStmt->bind_param("ssss", $email, $email, $phoneNumber, $phoneNumber);
+        $findDuplicateStmt->bind_param("ssssss", $email, $email, $userId, $phoneNumber, $phoneNumber, $userId);
         $findDuplicateStmt->execute();
         $findDuplicateStmt->bind_result($emailCount, $phoneNumberCount);
         $findDuplicateStmt->fetch();
