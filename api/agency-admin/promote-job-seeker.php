@@ -18,7 +18,7 @@ if ($result !== null) {
     echo json_encode(array("message" => $result));
     exit();
 }
-[$userId, $email, $agencyId] = [$_POST["userId"], StringUtils::lowercaseEmail($_POST["email"]), $_POST["agencyId"]];
+[$userId, $email, $agencyAdminUserId] = [$_POST["userId"], StringUtils::lowercaseEmail($_POST["email"]), $_POST["agencyAdminUserId"]];
 /**
  *  Verify token
  */
@@ -27,13 +27,25 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        $findExistingUserStmt = $db->getConnection()->prepare("
+        $findExistingAgencyAdminStmt = $db->getConnection()->prepare("SELECT agencyId from agencies WHERE userId=?");
+        $findExistingAgencyAdminStmt->bind_param("s", $agencyAdminUserId);
+        $findExistingAgencyAdminStmt->execute();
+        $findExistingAgencyAdminStmt->bind_result($agencyId);
+        $findExistingAgencyAdminStmt->fetch();
+        $findExistingAgencyAdminStmt->close();
+        if ($agencyId === null) {
+            http_response_code(404);
+            echo json_encode(array("message" => "Agency Admin not found"));
+            exit();
+        }
+
+        $promoteUserStmt = $db->getConnection()->prepare("
         UPDATE users
         SET role='Agent', agencyId=?
         WHERE users.email=? AND users.role='Job Seeker'");
-        $findExistingUserStmt->bind_param("ss", $agencyId, $email);
-        $findExistingUserStmt->execute();
-        $findExistingUserStmt->close();
+        $promoteUserStmt->bind_param("ss", $agencyId, $email);
+        $promoteUserStmt->execute();
+        $promoteUserStmt->close();
         echo json_encode(array("message" => "Agent added"));
     } catch (Exception $e) {
         http_response_code(500);

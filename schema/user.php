@@ -125,9 +125,9 @@ $promoteJobSeekerRoleSchema = [
         "required" => true,
         "message" => "Email is required"
     ],
-    "agencyId" => [
+    "agencyAdminUserId" => [
         "required" => true,
-        "message" => "AgencyId is required"
+        "message" => "AgencyAdminUserId is required"
     ],
 
 ];
