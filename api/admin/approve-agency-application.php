@@ -91,6 +91,7 @@ if ($db->getConnection()) {
          * 2. Promote the user's role
          * 3. Update agency application status
          * 4. Delete the job applications associated with the user (if any)
+         * 5. Delete the favourite jobs associated with the user (if any)
          */
         try {
             $connection = $db->getConnection();

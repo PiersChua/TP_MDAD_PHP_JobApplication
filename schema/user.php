@@ -120,7 +120,7 @@ $getJobSeekerDetailsSchema = [
     ],
 
 ];
-$promoteJobSeekerRoleSchema = [
+$addAgentSchema = [
     "email" => [
         "required" => true,
         "message" => "Email is required"
@@ -128,6 +128,12 @@ $promoteJobSeekerRoleSchema = [
     "agencyAdminUserId" => [
         "required" => true,
         "message" => "AgencyAdminUserId is required"
+    ],
+];
+$deleteUserSchema = [
+    "userIdToBeDeleted" => [
+        "required" => true,
+        "message" => "UserIdToBeDeleted is required"
     ],
 
 ];
