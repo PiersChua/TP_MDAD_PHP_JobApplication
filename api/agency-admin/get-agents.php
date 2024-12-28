@@ -39,9 +39,10 @@ if ($db->getConnection()) {
         }
 
         $findAgentsStmt = $db->getConnection()->prepare("
-        SELECT users.*, COUNT(jobs.jobId) AS job_count from users
+        SELECT users.userId,users.fullName, users.email, users.phoneNumber, COUNT(jobs.jobId) AS job_count from users
         LEFT JOIN jobs on users.userId=jobs.userId
         WHERE role='Agent' AND users.agencyId=?
+        GROUP BY users.userId
         ORDER BY users.createdAt DESC
         ");
         $findAgentsStmt->bind_param("s", $agencyId);

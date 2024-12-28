@@ -101,3 +101,33 @@ $getAgentsSchema = [
         "message" => "AgencyAdminUserId is required"
     ]
 ];
+
+$getUserDetailsSchema = [
+    "userIdToGet" => [
+        "required" => true,
+        "message" => "UserIdToGet is required"
+    ],
+    "userId" => [
+        "required" => true,
+        "message" => "UserId is required"
+    ]
+];
+
+$getJobSeekerDetailsSchema = [
+    "email" => [
+        "required" => true,
+        "message" => "Email is required"
+    ],
+
+];
+$promoteJobSeekerRoleSchema = [
+    "email" => [
+        "required" => true,
+        "message" => "Email is required"
+    ],
+    "agencyId" => [
+        "required" => true,
+        "message" => "AgencyId is required"
+    ],
+
+];
