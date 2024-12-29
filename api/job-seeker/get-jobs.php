@@ -21,10 +21,18 @@ if ($db->getConnection()) {
         if (isset($_GET["limit"]) && is_numeric($_GET["limit"])) {
             // extract the jobs based on the limit given
             $limit = $_GET["limit"];
-            $findJobsStmt = $db->getConnection()->prepare("SELECT * FROM jobs LIMIT ?");
+            $findJobsStmt = $db->getConnection()->prepare("
+            SELECT jobs.*, agencies.name as agency_name FROM jobs
+            INNER JOIN users ON jobs.userId = users.userId
+            INNER JOIN agencies ON users.agencyId = agencies.agencyId
+            LIMIT ?");
             $findJobsStmt->bind_param("i", $limit);
         } else {
-            $findJobsStmt = $db->getConnection()->prepare("SELECT * FROM jobs");
+            $findJobsStmt = $db->getConnection()->prepare("
+            SELECT jobs.*, agencies.name as agency_name FROM jobs
+            INNER JOIN users ON jobs.userId = users.userId
+            INNER JOIN agencies ON users.agencyId = agencies.agencyId
+            ");
         }
         $findJobsStmt->execute();
         $result = $findJobsStmt->get_result();

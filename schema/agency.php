@@ -14,5 +14,9 @@ $updateAgencySchema = [
     ],
     "address" => [
         "required" => false,
-    ]
+    ],
+    "agencyAdminUserId" => [
+        "required" => true,
+        "message" => "AgencyAdminUserId is required",
+    ],
 ];

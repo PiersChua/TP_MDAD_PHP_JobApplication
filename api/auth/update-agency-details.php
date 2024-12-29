@@ -19,8 +19,9 @@ if ($result !== null) {
     exit();
 }
 
-[$userId, $name, $email, $phoneNumber, $address] = [
+[$userId, $agencyAdminUserId, $name, $email, $phoneNumber, $address] = [
     $_POST["userId"],
+    $_POST["agencyAdminUserId"],
     $_POST["name"],
     StringUtils::lowercaseEmail($_POST["email"]),
     $_POST["phoneNumber"],
@@ -42,7 +43,7 @@ if ($db->getConnection()) {
             (SELECT COUNT(*) FROM users WHERE phoneNumber = ?)
             + (SELECT COUNT(*) FROM agencies WHERE phoneNumber = ? AND userId!=?)
         ");
-        $findDuplicateStmt->bind_param("ssssss", $email, $email, $userId, $phoneNumber, $phoneNumber, $userId);
+        $findDuplicateStmt->bind_param("ssssss", $email, $email, $agencyAdminUserId, $phoneNumber, $phoneNumber, $agencyAdminUserId);
         $findDuplicateStmt->execute();
         $findDuplicateStmt->bind_result($emailCount, $phoneNumberCount);
         $findDuplicateStmt->fetch();
@@ -59,7 +60,7 @@ if ($db->getConnection()) {
         }
 
         $updateUserStmt = $db->getConnection()->prepare("UPDATE agencies SET name=?,email=?,phoneNumber=?,address=? WHERE userId=?");
-        $updateUserStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $userId);
+        $updateUserStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $agencyAdminUserId);
         $updateUserStmt->execute();
         $updateUserStmt->close();
         echo json_encode(array("message" => "Profile updated"));
