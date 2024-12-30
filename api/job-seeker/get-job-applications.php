@@ -24,7 +24,7 @@ if ($db->getConnection()) {
         INNER JOIN users ON jobs.userId = users.userId
         INNER JOIN agencies ON users.agencyId = agencies.agencyId
         WHERE job_applications.userId=?
-         ORDER BY job_applications.createdAt DESC
+        ORDER BY job_applications.createdAt DESC
         ");
         $findFavouritesStmt->bind_param("s", $userId);
         $findFavouritesStmt->execute();

@@ -134,7 +134,7 @@ if ($result !== null) {
     $_POST["name"],
     StringUtils::lowercaseEmail($_POST["email"]),
     $_POST["phoneNumber"],
-    !is_null(trim($_POST["address"])) ? trim($_POST["address"]) : null,
+    trim($_POST["address"]),
     $_POST["userId"]
 ];
 

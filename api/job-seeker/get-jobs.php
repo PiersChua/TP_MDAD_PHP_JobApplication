@@ -25,13 +25,16 @@ if ($db->getConnection()) {
             SELECT jobs.*, agencies.name as agency_name FROM jobs
             INNER JOIN users ON jobs.userId = users.userId
             INNER JOIN agencies ON users.agencyId = agencies.agencyId
-            LIMIT ?");
+            ORDER BY jobs.updatedAt DESC
+            LIMIT ?
+            ");
             $findJobsStmt->bind_param("i", $limit);
         } else {
             $findJobsStmt = $db->getConnection()->prepare("
             SELECT jobs.*, agencies.name as agency_name FROM jobs
             INNER JOIN users ON jobs.userId = users.userId
             INNER JOIN agencies ON users.agencyId = agencies.agencyId
+            ORDER BY jobs.updatedAt DESC
             ");
         }
         $findJobsStmt->execute();

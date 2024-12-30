@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
-require_once __DIR__ . "/../../utils/validation.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -19,18 +18,13 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        $findAgenciesStmt = $db->getConnection()->prepare("
-        SELECT agencies.*, COUNT(agents.agencyId) as agent_count, manager.fullName as user_full_name from agencies
-        LEFT JOIN users AS agents ON agencies.agencyId = agents.agencyId
-        LEFT JOIN users AS manager ON agencies.userId = manager.userId
-        GROUP BY agencies.agencyId
-        ");
-        $findAgenciesStmt->execute();
-        $result = $findAgenciesStmt->get_result();
-        $findAgenciesStmt->close();
-        $agencies = $result->fetch_all(MYSQLI_ASSOC);
+        $findUsersStmt = $db->getConnection()->prepare("SELECT * FROM users WHERE role !='Admin'");
+        $findUsersStmt->execute();
+        $result = $findUsersStmt->get_result();
+        $findUsersStmt->close();
+        $users = $result->fetch_all(MYSQLI_ASSOC);
 
-        echo json_encode(array("data" => $agencies));
+        echo json_encode(array("data" => $users));
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(array("message" => $e->getMessage()));

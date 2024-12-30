@@ -19,15 +19,12 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        $findAgenciesStmt = $db->getConnection()->prepare("
-        SELECT agencies.*, COUNT(agents.agencyId) as agent_count, manager.fullName as user_full_name from agencies
-        LEFT JOIN users AS agents ON agencies.agencyId = agents.agencyId
-        LEFT JOIN users AS manager ON agencies.userId = manager.userId
-        GROUP BY agencies.agencyId
+        $findAgencyApplicationsStmt = $db->getConnection()->prepare("
+        SELECT * from agency_applications
         ");
-        $findAgenciesStmt->execute();
-        $result = $findAgenciesStmt->get_result();
-        $findAgenciesStmt->close();
+        $findAgencyApplicationsStmt->execute();
+        $result = $findAgencyApplicationsStmt->get_result();
+        $findAgencyApplicationsStmt->close();
         $agencies = $result->fetch_all(MYSQLI_ASSOC);
 
         echo json_encode(array("data" => $agencies));

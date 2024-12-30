@@ -13,14 +13,19 @@ if (!isset($_POST["userId"]) || is_null($token)) {
     echo json_encode(array("message" => "UserId and Token is required"));
     exit();
 }
-
-if (!isset($_POST["agencyApplicationId"])) {
+$result = Validation::validateSchema($_POST, $updateAgencyApplicationSchema);
+if ($result !== null) {
     http_response_code(400);
-    echo json_encode(array("message" => "AgencyApplicationId is required"));
+    echo json_encode(array("message" => $result));
     exit();
 }
 
-[$userId, $agencyApplicationId] = [$_POST["userId"], $_POST["agencyApplicationId"]];
+[$userId, $agencyApplicationId, $status] = [$_POST["userId"], $_POST["agencyApplicationId"], $_POST["status"]];
+if (!in_array($status, $validStatuses)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Status does not exist"));
+    exit();
+}
 
 // Verify token
 $payload = Jwt::decode($token);
@@ -28,18 +33,6 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        // check if admin exists
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Admin'");
-        $findExistingUserStmt->bind_param("s", $userId);
-        $findExistingUserStmt->execute();
-        $findExistingUserStmt->bind_result($userCount);
-        $findExistingUserStmt->fetch();
-        $findExistingUserStmt->close();
-        if ($userCount === 0) {
-            http_response_code(404);
-            echo json_encode(array("message" => "User not found"));
-            exit();
-        }
 
         // check the application exists, along with the Job Seeker who created the application
         $findExistingAgencyApplicationStmt = $db->getConnection()->prepare("
@@ -61,27 +54,49 @@ if ($db->getConnection()) {
             echo json_encode(array("message" => "Job Seeker not found"));
             exit();
         }
+        // Rejecting agency application
+        if ($status == "REJECTED") {
+            // Rejecting an application should also delete the job application from the database
+            $rejectApplicationStmt = $db->getConnection()->prepare("
+            UPDATE agency_applications
+            SET status='REJECTED' WHERE agencyApplicationId = ?
+            ");
+            $rejectApplicationStmt->bind_param("s", $agencyApplicationId);
+            $rejectApplicationStmt->execute();
+            $rejectApplicationStmt->close();
+            echo json_encode(array("message" => "Agency application rejected"));
+            exit();
+        }
 
-        // check the db if an agency already exists, combine the result with UNION ALL
         $email = $agencyApplication["email"];
         $phoneNumber = $agencyApplication["phoneNumber"];
         $name = $agencyApplication["name"];
         $findDuplicateStmt = $db->getConnection()->prepare("
-            SELECT COUNT(*) 
-            FROM (
-                SELECT email FROM users WHERE email = ? OR phoneNumber = ?
-                UNION ALL
-                SELECT email FROM agencies WHERE email = ? OR phoneNumber = ? OR name = ?
-            ) as combined
+           SELECT 
+            (SELECT COUNT(*) FROM users WHERE email = ?)
+            + (SELECT COUNT(*) FROM agencies WHERE email = ?) ,
+            (SELECT COUNT(*) FROM users WHERE phoneNumber = ?)
+            + (SELECT COUNT(*) FROM agencies WHERE phoneNumber = ?),
+            (SELECT COUNT(*) FROM agencies WHERE name=?)
         ");
-        $findDuplicateStmt->bind_param("sssss", $email, $phoneNumber, $email, $phoneNumber, $name);
+        $findDuplicateStmt->bind_param("sssss", $email, $email, $phoneNumber, $phoneNumber, $name);
         $findDuplicateStmt->execute();
-        $findDuplicateStmt->bind_result($duplicateCount);
+        $findDuplicateStmt->bind_result($emailCount, $phoneNumberCount, $nameCount);
         $findDuplicateStmt->fetch();
         $findDuplicateStmt->close();
-        if ($duplicateCount > 0) {
+        if ($emailCount > 0) {
             http_response_code(400);
-            echo json_encode(array("message" => "Email, phone number or agency name is already in use"));
+            echo json_encode(array("message" => "Email is already in use"));
+            exit();
+        }
+        if ($phoneNumberCount > 0) {
+            http_response_code(400);
+            echo json_encode(array("message" => "Phone Number is already in use"));
+            exit();
+        }
+        if ($nameCount > 0) {
+            http_response_code(400);
+            echo json_encode(array("message" => "Name is already in use"));
             exit();
         }
 
@@ -118,6 +133,14 @@ if ($db->getConnection()) {
             $updateApplicationStatusStmt->execute();
             $updateApplicationStatusStmt->close();
 
+            $deleteFavouriteJobsStmt = $connection->prepare("
+            DELETE FROM favourite_jobs
+            WHERE userId=?
+            ");
+            $deleteFavouriteJobsStmt->bind_param("s", $agencyApplication["userId"]);
+            $deleteFavouriteJobsStmt->execute();
+            $deleteFavouriteJobsStmt->close();
+
             $deleteJobApplicationsStmt = $connection->prepare("
             DELETE FROM job_applications
             WHERE userId=?
@@ -128,7 +151,7 @@ if ($db->getConnection()) {
 
             // commit the transaction
             $connection->commit();
-            echo json_encode(array("message" => "Agency has been created"));
+            echo json_encode(array("message" => "Agency application accepted"));
         } catch (Exception $e) {
             $connection->rollback();
             http_response_code(500);

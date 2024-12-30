@@ -26,59 +26,9 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-
-        /**
-         *  Database Transaction
-         * 1. Delete associated jobs (if any)
-         * 2. Delete associated favourite jobs (if any)
-         * 3. Delete associated agency applications (if any)
-         * 4. Delete associated job applications (if any)
-         * 5. Delete associated agencies (if any)
-         * 6. Delete the user
-         */
         try {
             $connection = $db->getConnection();
             $connection->begin_transaction();
-
-            $deleteJobsStmt = $connection->prepare("
-            DELETE FROM jobs
-            WHERE userId=?
-            ");
-            $deleteJobsStmt->bind_param("s", $userIdToBeDeleted);
-            $deleteJobsStmt->execute();
-            $deleteJobsStmt->close();
-
-            $deleteFavouriteJobsStmt = $connection->prepare("
-            DELETE FROM favourite_jobs
-            WHERE userId=?
-            ");
-            $deleteFavouriteJobsStmt->bind_param("s", $userIdToBeDeleted);
-            $deleteFavouriteJobsStmt->execute();
-            $deleteFavouriteJobsStmt->close();
-
-            $deleteAgencyApplicationsStmt = $connection->prepare("
-            DELETE FROM agency_applications
-            WHERE userId=?
-            ");
-            $deleteAgencyApplicationsStmt->bind_param("s", $userIdToBeDeleted);
-            $deleteAgencyApplicationsStmt->execute();
-            $deleteAgencyApplicationsStmt->close();
-
-            $deleteJobApplicationsStmt = $connection->prepare("
-            DELETE FROM job_applications
-            WHERE userId=?
-            ");
-            $deleteJobApplicationsStmt->bind_param("s", $userIdToBeDeleted);
-            $deleteJobApplicationsStmt->execute();
-            $deleteJobApplicationsStmt->close();
-
-            $deleteAgencyStmt = $connection->prepare("
-            DELETE FROM agencies
-            WHERE userId=?
-            ");
-            $deleteAgencyStmt->bind_param("s", $userIdToBeDeleted);
-            $deleteAgencyStmt->execute();
-            $deleteAgencyStmt->close();
 
             $deleteUserStmt = $db->getConnection()->prepare("
             DELETE FROM users
@@ -89,7 +39,7 @@ if ($db->getConnection()) {
             $deleteUserStmt->close();
 
             $connection->commit();
-            echo json_encode(array("message" => "User has been deleted, along with it's associated records"));
+            echo json_encode(array("message" => "Action successful. All associated records deleted"));
         } catch (Exception $e) {
             $connection->rollback();
             http_response_code(500);

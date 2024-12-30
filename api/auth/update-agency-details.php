@@ -63,7 +63,7 @@ if ($db->getConnection()) {
         $updateUserStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $agencyAdminUserId);
         $updateUserStmt->execute();
         $updateUserStmt->close();
-        echo json_encode(array("message" => "Profile updated"));
+        echo json_encode(array("message" => "Agency updated"));
     } catch (Exception $e) {
         http_response_code(500);
         echo json_encode(array("message" => $e->getMessage()));

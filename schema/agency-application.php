@@ -14,6 +14,19 @@ $createAgencyApplicationSchema = [
         "message" => "Agency Phone Number is required",
     ],
     "address" => [
-        "required" => false
+        "required" => true,
+        "message" => "Agency Adress is required",
     ],
 ];
+
+$updateAgencyApplicationSchema = [
+    "agencyApplicationId" => [
+        "required" => "true",
+        "message" => "AgencyApplicationId is required",
+    ],
+    "status" => [
+        "required" => true,
+        "message" => "Status is required",
+    ],
+];
+$validStatuses = ['ACCEPTED', 'REJECTED'];
