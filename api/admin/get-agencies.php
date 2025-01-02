@@ -2,6 +2,7 @@
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
 require_once __DIR__ . "/../../utils/validation.php";
+require_once __DIR__ . "/../../utils/userValidator.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -19,6 +20,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
+        UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $findAgenciesStmt = $db->getConnection()->prepare("
         SELECT agencies.*, COUNT(agents.agencyId) as agent_count, manager.fullName as user_full_name from agencies
         LEFT JOIN users AS agents ON agencies.agencyId = agents.agencyId

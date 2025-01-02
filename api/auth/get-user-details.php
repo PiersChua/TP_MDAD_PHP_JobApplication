@@ -3,6 +3,7 @@ require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
 require_once __DIR__ . "/../../schema/user.php";
+require_once __DIR__ . "/../../utils/userValidator.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -26,6 +27,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
+        UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $findExistingUserStmt = $db->getConnection()->prepare("
         SELECT users.*,
         agencies.name as agency_name, agencies.email as agency_email, agencies.phoneNumber as agency_phone_number, agencies.address as agency_address

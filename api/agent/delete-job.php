@@ -3,6 +3,8 @@ require_once __DIR__ . "/../../schema/job.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
+require_once __DIR__ . "/../../utils/userValidator.php";
+
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -28,6 +30,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = DB::getInstance();
 if ($db->getConnection()) {
     try {
+        UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Agent'");
         $findExistingUserStmt->bind_param("s", $agentUserId);
         $findExistingUserStmt->execute();

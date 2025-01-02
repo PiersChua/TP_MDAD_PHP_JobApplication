@@ -3,6 +3,8 @@ require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
 require_once __DIR__ . "/../../schema/job-application.php";
 require_once __DIR__ . "/../../utils/validation.php";
+require_once __DIR__ . "/../../utils/userValidator.php";
+
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -31,6 +33,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
+        UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $updateJobApplicationStmt = $db->getConnection()->prepare("
        UPDATE job_applications
        SET status=?

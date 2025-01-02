@@ -3,6 +3,7 @@ require_once __DIR__ . "/../../schema/job-application.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
+require_once __DIR__ . "/../../utils/userValidator.php";
 
 
 $headers = apache_request_headers();
@@ -27,18 +28,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        // check if user exists
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Job Seeker'");
-        $findExistingUserStmt->bind_param("s", $userId);
-        $findExistingUserStmt->execute();
-        $findExistingUserStmt->bind_result($userCount);
-        $findExistingUserStmt->fetch();
-        $findExistingUserStmt->close();
-        if ($userCount === 0) {
-            http_response_code(404);
-            echo json_encode(array("message" => "User not found"));
-            exit();
-        }
+        UserValidator::verifyIfUserExists($userId, $db->getConnection());
 
         // check if job exists
         $findExistingJobStmt = $db->getConnection()->prepare("SELECT COUNT(*) FROM jobs WHERE jobId=?");

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
+require_once __DIR__ . "/../../utils/userValidator.php";
 
 $headers = apache_request_headers();
 $token = Jwt::getTokenFromHeader($headers);
@@ -18,6 +19,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
+        UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $findFavouritesStmt = $db->getConnection()->prepare("
         SELECT jobs.*, agencies.name as agency_name FROM jobs
         INNER JOIN favourite_jobs ON jobs.jobId = favourite_jobs.jobId

@@ -3,6 +3,7 @@ require_once __DIR__ . "/../../schema/agency-application.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
+require_once __DIR__ . "/../../utils/userValidator.php";
 
 
 $headers = apache_request_headers();
@@ -33,7 +34,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-
+        UserValidator::verifyIfUserExists($userId, $db->getConnection());
         // check the application exists, along with the Job Seeker who created the application
         $findExistingAgencyApplicationStmt = $db->getConnection()->prepare("
         SELECT agency_applications.*,users.userId as jobSeekerId FROM agency_applications
