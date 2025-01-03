@@ -67,6 +67,11 @@ if (!Validation::validateJobOrganisation($organisation)) {
     echo json_encode(array("message" => "Invalid organisation, please type in the correct format"));
     exit();
 }
+if (!Validation::validateJobSalary($partTimeSalary, $fullTimeSalary)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid salary, please type in the correct format"));
+    exit();
+}
 /**
  *  Verify token
  */

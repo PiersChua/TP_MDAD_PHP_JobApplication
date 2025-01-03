@@ -6,7 +6,7 @@
 class Validation
 {
     /**
-     * Validates a name length
+     * Validates a user's name
      */
     public static function validateUserName($name): bool
     {
@@ -50,7 +50,7 @@ class Validation
     }
 
     /**
-     * Validates a job positon's length
+     * Validates a job's positon
      */
     public static function validateJobPosition($position)
     {
@@ -63,7 +63,7 @@ class Validation
         return true;
     }
     /**
-     * Validates a job responsibilities's length
+     * Validates a job's responsibilities
      */
     public static function validateJobResponsibilities($responsibilities)
     {
@@ -77,7 +77,7 @@ class Validation
     }
 
     /**
-     * Validates a job description's length
+     * Validates a job's description'
      */
     public static function validateJobDescription($description)
     {
@@ -91,7 +91,7 @@ class Validation
     }
 
     /**
-     * Validates a job schedule's length
+     * Validates a job's schedule
      */
     public static function validateJobSchedule($schedule)
     {
@@ -105,7 +105,7 @@ class Validation
     }
 
     /**
-     * Validates a job location's length
+     * Validates a job's location
      */
     public static function validateJobLocation($location)
     {
@@ -118,7 +118,7 @@ class Validation
         return true;
     }
     /**
-     * Validates a job organisation's length
+     * Validates a job's organisation
      */
     public static function validateJobOrganisation($organisation)
     {
@@ -130,9 +130,30 @@ class Validation
         }
         return true;
     }
+    /**
+     * Validates a job's salary
+     */
+    public static function validateJobSalary($partTimeSalary, $fullTimeSalary)
+    {
+        $partTimeSalaryPattern = '/^\d{1,4}(\.\d{1,2})?$/';
+        $fullTimeSalaryPattern = '/^\d{1,6}(\.\d{1,2})?$/';
+        if ($partTimeSalary == null && $fullTimeSalary == null) {
+            return false;
+        }
+        if ((float)$partTimeSalary === 0.0 && (float)$fullTimeSalary === 0.0) {
+            return false;
+        }
+        if ($partTimeSalary != null && !preg_match($partTimeSalaryPattern, (string)$partTimeSalary)) {
+            return false;
+        }
+        if ($fullTimeSalary != null && !preg_match($fullTimeSalaryPattern, (string)$fullTimeSalary)) {
+            return false;
+        }
+        return true;
+    }
 
     /**
-     * Validates an agency address's length
+     * Validates an agency's address
      */
     public static function validateAgencyAddress($address)
     {
@@ -146,7 +167,7 @@ class Validation
     }
 
     /**
-     * Validates an agency name's length
+     * Validates an agency's name
      */
     public static function validateAgencyName($name): bool
     {
