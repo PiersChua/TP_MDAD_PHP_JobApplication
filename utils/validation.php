@@ -5,14 +5,15 @@
  */
 class Validation
 {
-    private static int $minNameLength = 5;
     /**
-     * Validates a name based on the 
+     * Validates a name length
      */
-    public static function validateName($name): bool
+    public static function validateUserName($name): bool
     {
-        // Check if the name is long enough
-        if (strlen($name) < self::$minNameLength) {
+        if (strlen($name) < 5) {
+            return false;
+        }
+        if (strlen($name) > 100) {
             return false;
         }
 
@@ -35,6 +36,7 @@ class Validation
         $pattern = "/^[689]\d{7}$/";
         return preg_match($pattern, $phoneNumber) === 1;
     }
+
     /**
      * Validates an email address
      *
@@ -46,6 +48,122 @@ class Validation
         $pattern = "/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/";
         return preg_match($pattern, $email) === 1;
     }
+
+    /**
+     * Validates a job positon's length
+     */
+    public static function validateJobPosition($position)
+    {
+        if (strlen($position) < 10) {
+            return false;
+        }
+        if (strlen($position) > 100) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Validates a job responsibilities's length
+     */
+    public static function validateJobResponsibilities($responsibilities)
+    {
+        if (strlen($responsibilities) < 50) {
+            return false;
+        }
+        if (strlen($responsibilities) > 1000) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates a job description's length
+     */
+    public static function validateJobDescription($description)
+    {
+        if (strlen($description) < 50) {
+            return false;
+        }
+        if (strlen($description) > 1000) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates a job schedule's length
+     */
+    public static function validateJobSchedule($schedule)
+    {
+        if (strlen($schedule) < 5) {
+            return false;
+        }
+        if (strlen($schedule) > 50) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates a job location's length
+     */
+    public static function validateJobLocation($location)
+    {
+        if (strlen($location) < 2) {
+            return false;
+        }
+        if (strlen($location) > 100) {
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Validates a job organisation's length
+     */
+    public static function validateJobOrganisation($organisation)
+    {
+        if (strlen($organisation) < 2) {
+            return false;
+        }
+        if (strlen($organisation) > 100) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates an agency address's length
+     */
+    public static function validateAgencyAddress($address)
+    {
+        if (strlen($address) < 2) {
+            return false;
+        }
+        if (strlen($address) > 100) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validates an agency name's length
+     */
+    public static function validateAgencyName($name): bool
+    {
+        if (strlen($name) < 5) {
+            return false;
+        }
+        if (strlen($name) > 100) {
+            return false;
+        }
+
+        // Check if the name contains any numbers
+        if (preg_match('/\d/', $name)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Validates superglobals against a schema.
      *

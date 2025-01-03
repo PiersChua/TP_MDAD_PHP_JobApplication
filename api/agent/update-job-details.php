@@ -37,6 +37,36 @@ if (!isset($_POST["partTimeSalary"]) && !isset($_POST["fullTimeSalary"])) {
     $_POST["jobId"],
     $_POST["agentUserId"]
 ];
+if (!Validation::validateJobPosition($position)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid position, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateJobResponsibilities($responsibilities)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid responsibilities, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateJobDescription($description)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid description, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateJobLocation($location)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid location, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateJobSchedule($schedule)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid schedule, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateJobOrganisation($organisation)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid organisation, please type in the correct format"));
+    exit();
+}
 /**
  *  Verify token
  */

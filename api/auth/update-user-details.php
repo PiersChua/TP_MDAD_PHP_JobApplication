@@ -32,19 +32,34 @@ if ($result !== null) {
     $_POST["nationality"],
 
 ];
-if (!in_array($gender, $allowedGender, true)) {
+if (!in_array($gender, $allowedGenders, true)) {
     http_response_code(400);
     echo json_encode(array("message" => "Gender does not exist"));
     exit();
 }
-if (!in_array($race, $allowedRace, true)) {
+if (!in_array($race, $allowedRaces, true)) {
     http_response_code(400);
     echo json_encode(array("message" => "Race does not exist"));
     exit();
 }
-if (!in_array($nationality, $allowedNationality, true)) {
+if (!in_array($nationality, $allowedNationalities, true)) {
     http_response_code(400);
     echo json_encode(array("message" => "Nationality does not exist"));
+    exit();
+}
+if (!Validation::validateUserName($fullName)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid name, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateEmail($email)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid email type, please type in the correct format"));
+    exit();
+}
+if (!Validation::validatePhoneNumber($phoneNumber)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid phone number, please type in the correct format"));
     exit();
 }
 /**

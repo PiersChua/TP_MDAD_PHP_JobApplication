@@ -1,8 +1,8 @@
 <?php
 $allowedRoles = ["Job Seeker", "Admin"];
-$allowedGender = ["Male", "Female"];
-$allowedRace = ["Chinese", "Malay", "Indian", "Others"];
-$allowedNationality = ["Singaporean", "PR", "Others"];
+$allowedGenders = ["Male", "Female"];
+$allowedRaces = ["Chinese", "Malay", "Indian", "Others"];
+$allowedNationalities = ["Singaporean", "PR", "Others"];
 $signUpSchema =    [
     "fullName" => [
         "required" => true,

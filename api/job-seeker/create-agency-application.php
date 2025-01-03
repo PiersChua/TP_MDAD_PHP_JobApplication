@@ -139,6 +139,27 @@ if ($result !== null) {
     $_POST["userId"]
 ];
 
+if (!Validation::validateUserName($name)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid name, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateEmail($email)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid email, please type in the correct format"));
+    exit();
+}
+if (!Validation::validatePhoneNumber($phoneNumber)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid phone number, please type in the correct format"));
+    exit();
+}
+if (!Validation::validateAgencyAddress($address)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Invalid address, please type in the correct format"));
+    exit();
+}
+
 // Verify token
 $payload = Jwt::decode($token);
 Jwt::verifyPayloadWithUserId($payload, $userId);

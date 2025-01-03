@@ -31,7 +31,22 @@ if (!in_array($role, $allowedRoles, true)) {
     echo json_encode(array("message" => "Role does not exist"));
     exit();
 }
-if (!Validation::validateName($fullName)) {
+if (!in_array($gender, $allowedGenders, true)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Gender does not exist"));
+    exit();
+}
+if (!in_array($race, $allowedRaces, true)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Race does not exist"));
+    exit();
+}
+if (!in_array($nationality, $allowedNationalities, true)) {
+    http_response_code(400);
+    echo json_encode(array("message" => "Nationality does not exist"));
+    exit();
+}
+if (!Validation::validateUserName($fullName)) {
     http_response_code(400);
     echo json_encode(array("message" => "Invalid name, please type in the correct format"));
     exit();
