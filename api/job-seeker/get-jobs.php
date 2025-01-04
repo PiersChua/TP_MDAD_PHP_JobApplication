@@ -20,17 +20,17 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         UserValidator::verifyIfUserExists($userId, $db->getConnection());
-        if (isset($_GET["limit"]) && is_numeric($_GET["limit"])) {
-            // extract the jobs based on the limit given
-            $limit = $_GET["limit"];
+        if (isset($_GET["query"]) && !empty($_GET["query"])) {
+            $searchQuery = "%" . strtolower($_GET["query"]) . "%";
             $findJobsStmt = $db->getConnection()->prepare("
-            SELECT jobs.*, agencies.name as agency_name FROM jobs
+            SELECT jobs.*, agencies.name as agency_name 
+            FROM jobs
             INNER JOIN users ON jobs.userId = users.userId
             INNER JOIN agencies ON users.agencyId = agencies.agencyId
+            WHERE LOWER(jobs.position) LIKE ?
             ORDER BY jobs.updatedAt DESC
-            LIMIT ?
             ");
-            $findJobsStmt->bind_param("i", $limit);
+            $findJobsStmt->bind_param("s", $searchQuery);
         } else {
             $findJobsStmt = $db->getConnection()->prepare("
             SELECT jobs.*, agencies.name as agency_name FROM jobs
