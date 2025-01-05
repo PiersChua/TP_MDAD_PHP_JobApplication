@@ -22,7 +22,7 @@ if ($db->getConnection()) {
     try {
         UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $findAgenciesStmt = $db->getConnection()->prepare("
-        SELECT agencies.*, COUNT(agents.agencyId) as agent_count, manager.fullName as user_full_name from agencies
+        SELECT agencies.agencyId,agencies.userId,agencies.name,agencies.email,agencies.phoneNumber, COUNT(agents.agencyId) as agent_count, manager.fullName as user_full_name from agencies
         LEFT JOIN users AS agents ON agencies.agencyId = agents.agencyId
         LEFT JOIN users AS manager ON agencies.userId = manager.userId
         GROUP BY agencies.agencyId

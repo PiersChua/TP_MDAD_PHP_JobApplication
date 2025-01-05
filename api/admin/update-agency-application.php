@@ -37,7 +37,8 @@ if ($db->getConnection()) {
         UserValidator::verifyIfUserExists($userId, $db->getConnection());
         // check the application exists, along with the Job Seeker who created the application
         $findExistingAgencyApplicationStmt = $db->getConnection()->prepare("
-        SELECT agency_applications.*,users.userId as jobSeekerId FROM agency_applications
+        SELECT agency_applications.*, 
+        users.userId as jobSeekerId FROM agency_applications
         INNER JOIN users ON agency_applications.userId = users.userId 
         WHERE agencyApplicationId=? AND users.role='Job Seeker'");
         $findExistingAgencyApplicationStmt->bind_param("s", $agencyApplicationId);
@@ -108,15 +109,20 @@ if ($db->getConnection()) {
          * 3. Update agency application status
          * 4. Delete the job applications associated with the user (if any)
          * 5. Delete the favourite jobs associated with the user (if any)
+         * 6. Reject any residual agency applications associated with the user (if any)
          */
         try {
+            $image =
+                $agencyApplication["image"] ?? null;
             $connection = $db->getConnection();
             $connection->begin_transaction();
-            $createAgencyStmt = $connection->prepare("INSERT INTO agencies (name, email, phoneNumber, address, userId) VALUES(?,?,?,?,?) ");
-            $createAgencyStmt->bind_param("sssss", $agencyApplication["name"], $agencyApplication["email"], $agencyApplication["phoneNumber"], $agencyApplication["address"], $agencyApplication["userId"]);
+            $createAgencyStmt = $connection->prepare("INSERT INTO agencies (name, email, phoneNumber, address, image, userId) VALUES(?,?,?,?,?,?) ");
+            $createAgencyStmt->bind_param("ssssbs", $agencyApplication["name"], $agencyApplication["email"], $agencyApplication["phoneNumber"], $agencyApplication["address"], $image, $agencyApplication["userId"]);
+            if ($image !== null) {
+                $createAgencyStmt->send_long_data(4, $image);
+            }
             $createAgencyStmt->execute();
             $createAgencyStmt->close();
-
             $promoteRoleStmt = $connection->prepare("
             UPDATE users 
             SET role='Agency Admin'
@@ -149,6 +155,15 @@ if ($db->getConnection()) {
             $deleteJobApplicationsStmt->bind_param("s", $agencyApplication["userId"]);
             $deleteJobApplicationsStmt->execute();
             $deleteJobApplicationsStmt->close();
+
+            $deleteAgencyApplicationsStmt = $connection->prepare("
+            UPDATE agency_applications
+            SET status='REJECTED'
+            WHERE userId=? AND agencyApplicationId!=?
+            ");
+            $deleteAgencyApplicationsStmt->bind_param("ss", $agencyApplication["userId"], $agencyApplication["agencyApplicationId"]);
+            $deleteAgencyApplicationsStmt->execute();
+            $deleteAgencyApplicationsStmt->close();
 
             // commit the transaction
             $connection->commit();

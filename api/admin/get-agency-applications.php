@@ -22,13 +22,12 @@ if ($db->getConnection()) {
     try {
         UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $findAgencyApplicationsStmt = $db->getConnection()->prepare("
-        SELECT * from agency_applications
+        SELECT agencyApplicationId, name, email, phoneNumber, address, status, updatedAt from agency_applications
         ");
         $findAgencyApplicationsStmt->execute();
         $result = $findAgencyApplicationsStmt->get_result();
         $findAgencyApplicationsStmt->close();
         $agencies = $result->fetch_all(MYSQLI_ASSOC);
-
         echo json_encode(array("data" => $agencies));
     } catch (Exception $e) {
         http_response_code(500);

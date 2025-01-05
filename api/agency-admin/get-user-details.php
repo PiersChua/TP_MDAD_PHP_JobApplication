@@ -30,7 +30,7 @@ if ($db->getConnection()) {
         UserValidator::verifyIfUserExists($userId, $db->getConnection());
         $findExistingUserStmt = $db->getConnection()->prepare("
         SELECT users.*,
-        agencies.name as agency_name, agencies.email as agency_email, agencies.phoneNumber as agency_phone_number, agencies.address as agency_address
+        agencies.name as agency_name, agencies.email as agency_email, agencies.phoneNumber as agency_phone_number, agencies.address as agency_address, agencies.image as agency_image
         from users 
         LEFT JOIN agencies ON users.userId=agencies.userId
         WHERE users.userId=?");
@@ -43,6 +43,9 @@ if ($db->getConnection()) {
             http_response_code(404);
             echo json_encode(array("message" => "User not found"));
             exit();
+        }
+        if (!is_null($user['agency_image'])) {
+            $user['agency_image'] = base64_encode($user['agency_image']);
         }
         echo json_encode($user);
     } catch (Exception $e) {
