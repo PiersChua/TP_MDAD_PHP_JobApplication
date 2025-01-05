@@ -20,7 +20,7 @@ if ($result !== null) {
     exit();
 }
 
-[$userId, $userIdToBeUpdated, $fullName, $email, $phoneNumber, $dateOfBirth, $gender, $race, $nationality] = [
+[$userId, $userIdToBeUpdated, $fullName, $email, $phoneNumber, $dateOfBirth, $gender, $race, $nationality, $image] = [
     $_POST["userId"],
     $_POST["userIdToBeUpdated"],
     StringUtils::capitalizeName($_POST["fullName"]),
@@ -30,6 +30,7 @@ if ($result !== null) {
     $_POST["gender"],
     $_POST["race"],
     $_POST["nationality"],
+    isset($_POST["image"]) ? base64_decode($_POST["image"]) : null,
 
 ];
 if (!in_array($gender, $allowedGenders, true)) {
@@ -93,11 +94,19 @@ if ($db->getConnection()) {
             echo json_encode(array("message" => "Phone Number is already in use"));
             exit();
         }
+        if ($image !== null) {
+            $updateUserStmt = $db->getConnection()->prepare("UPDATE users SET fullName=?,email=?,phoneNumber=?,dateOfBirth=?,gender=?,race=?,nationality=?,image=? WHERE userId=?");
+            $updateUserStmt->bind_param("sssssssbs", $fullName, $email, $phoneNumber, $dateOfBirth, $gender, $race, $nationality, $image, $userIdToBeUpdated);
+            $updateUserStmt->send_long_data(7, $image);
+            $updateUserStmt->execute();
+            $updateUserStmt->close();
+        } else {
+            $updateUserStmt = $db->getConnection()->prepare("UPDATE users SET fullName=?,email=?,phoneNumber=?,dateOfBirth=?,gender=?,race=?,nationality=? WHERE userId=?");
+            $updateUserStmt->bind_param("ssssssss", $fullName, $email, $phoneNumber, $dateOfBirth, $gender, $race, $nationality, $userIdToBeUpdated);
+            $updateUserStmt->execute();
+            $updateUserStmt->close();
+        }
 
-        $updateUserStmt = $db->getConnection()->prepare("UPDATE users SET fullName=?,email=?,phoneNumber=?,dateOfBirth=?,gender=?,race=?,nationality=? WHERE userId=?");
-        $updateUserStmt->bind_param("ssssssss", $fullName, $email, $phoneNumber, $dateOfBirth, $gender, $race, $nationality, $userIdToBeUpdated);
-        $updateUserStmt->execute();
-        $updateUserStmt->close();
         echo json_encode(array("message" => "Profile updated"));
     } catch (Exception $e) {
         http_response_code(500);

@@ -20,3 +20,13 @@ $updateAgencySchema = [
         "message" => "AgencyAdminUserId is required",
     ],
 ];
+$getAgencyDetailsSchema = [
+    "userId" => [
+        "required" => true,
+        "message" => "UserId is required"
+    ],
+    "agencyAdminUserId" => [
+        "required" => true,
+        "message" => "AgencyAdminUserId is required"
+    ]
+];

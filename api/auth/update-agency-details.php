@@ -20,13 +20,14 @@ if ($result !== null) {
     exit();
 }
 
-[$userId, $agencyAdminUserId, $name, $email, $phoneNumber, $address] = [
+[$userId, $agencyAdminUserId, $name, $email, $phoneNumber, $address, $image] = [
     $_POST["userId"],
     $_POST["agencyAdminUserId"],
     $_POST["name"],
     StringUtils::lowercaseEmail($_POST["email"]),
     $_POST["phoneNumber"],
-    $_POST["address"]
+    $_POST["address"],
+    isset($_POST["image"]) ? base64_decode($_POST["image"]) : null,
 ];
 if (!Validation::validateAgencyName($name)) {
     http_response_code(400);
@@ -79,11 +80,19 @@ if ($db->getConnection()) {
             echo json_encode(array("message" => "Phone Number is already in use"));
             exit();
         }
+        if ($image !== null) {
+            $updateAgencyStmt = $db->getConnection()->prepare("UPDATE agencies SET name=?,email=?,phoneNumber=?,address=?,image=? WHERE userId=?");
+            $updateAgencyStmt->bind_param("ssssbs", $name, $email, $phoneNumber, $address, $image, $agencyAdminUserId);
+            $updateAgencyStmt->send_long_data(4, $image);
+            $updateAgencyStmt->execute();
+            $updateAgencyStmt->close();
+        } else {
+            $updateAgencyStmt = $db->getConnection()->prepare("UPDATE agencies SET name=?,email=?,phoneNumber=?,address=? WHERE userId=?");
+            $updateAgencyStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $agencyAdminUserId);
+            $updateAgencyStmt->execute();
+            $updateAgencyStmt->close();
+        }
 
-        $updateUserStmt = $db->getConnection()->prepare("UPDATE agencies SET name=?,email=?,phoneNumber=?,address=? WHERE userId=?");
-        $updateUserStmt->bind_param("sssss", $name, $email, $phoneNumber, $address, $agencyAdminUserId);
-        $updateUserStmt->execute();
-        $updateUserStmt->close();
         echo json_encode(array("message" => "Agency updated"));
     } catch (Exception $e) {
         http_response_code(500);

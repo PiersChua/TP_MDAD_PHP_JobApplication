@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS users (
     race ENUM('Chinese','Malay', 'Indian','Others'),
     nationality ENUM('Singaporean', 'PR', 'Others'),
     resume VARCHAR(255),
+    image MEDIUMBLOB,
     agencyId CHAR(36),
     createdAt TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
