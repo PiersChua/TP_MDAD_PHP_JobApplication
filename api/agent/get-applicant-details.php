@@ -28,7 +28,7 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         UserValidator::verifyIfUserExists($userId, $db->getConnection());
-        $findExistingUserStmt = $db->getConnection()->prepare("SELECT fullName,email,dateOfBirth,phoneNumber,race,nationality,gender from users WHERE userId=?");
+        $findExistingUserStmt = $db->getConnection()->prepare("SELECT fullName,email,dateOfBirth,phoneNumber,race,nationality,gender,image from users WHERE userId=?");
         $findExistingUserStmt->bind_param("s", $applicantUserId);
         $findExistingUserStmt->execute();
         $result = $findExistingUserStmt->get_result();
@@ -38,6 +38,9 @@ if ($db->getConnection()) {
             http_response_code(404);
             echo json_encode(array("message" => "User not found"));
             exit();
+        }
+        if (!is_null($applicant["image"])) {
+            $applicant["image"] = base64_encode($applicant["image"]);
         }
         echo json_encode($applicant);
     } catch (Exception $e) {

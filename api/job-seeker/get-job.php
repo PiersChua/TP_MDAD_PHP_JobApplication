@@ -32,7 +32,7 @@ if ($db->getConnection()) {
          */
         $findExistingJobStmt = $db->getConnection()->prepare("
             SELECT jobs.*, 
-            users.fullName as user_fullName, users.email as user_email, users.phoneNumber as user_phoneNumber,
+            users.fullName as user_fullName, users.email as user_email, users.phoneNumber as user_phoneNumber, users.image as user_image,
             agencies.name as agency_name, agencies.email as agency_email, agencies.phoneNumber as agency_phoneNumber, agencies.address as agency_address, agencies.image as agency_image
             FROM jobs
             INNER JOIN users ON jobs.userId = users.userId
@@ -48,6 +48,9 @@ if ($db->getConnection()) {
             http_response_code(404);
             echo json_encode(array("message" => "Job not found"));
             exit();
+        }
+        if (!is_null($job['user_image'])) {
+            $job['user_image'] = base64_encode($job['user_image']);
         }
         if (!is_null($job['agency_image'])) {
             $job['agency_image'] = base64_encode($job['agency_image']);

@@ -44,6 +44,9 @@ if ($db->getConnection()) {
             echo json_encode(array("message" => "User not found"));
             exit();
         }
+        if (!is_null($user['image'])) {
+            $user['image'] = base64_encode($user['image']);
+        }
         if (!is_null($user['agency_image'])) {
             $user['agency_image'] = base64_encode($user['agency_image']);
         }

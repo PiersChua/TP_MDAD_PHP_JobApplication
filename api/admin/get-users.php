@@ -20,7 +20,7 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         UserValidator::verifyIfUserExists($userId, $db->getConnection());
-        $findUsersStmt = $db->getConnection()->prepare("SELECT * FROM users WHERE role !='Admin'");
+        $findUsersStmt = $db->getConnection()->prepare("SELECT userId,fullName,email,phoneNumber,role FROM users WHERE role !='Admin'");
         $findUsersStmt->execute();
         $result = $findUsersStmt->get_result();
         $findUsersStmt->close();
