@@ -19,7 +19,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findUsersStmt = $db->getConnection()->prepare("SELECT userId,fullName,email,phoneNumber,role FROM users WHERE role !='Admin'");
         $findUsersStmt->execute();
         $result = $findUsersStmt->get_result();

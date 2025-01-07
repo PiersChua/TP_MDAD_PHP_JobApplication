@@ -112,6 +112,16 @@ $getUserDetailsSchema = [
         "message" => "UserId is required"
     ]
 ];
+$verifyUserDetailsSchema = [
+    "userId" => [
+        "required" => true,
+        "message" => "UserId is required"
+    ],
+    "role" => [
+        "required" => true,
+        "message" => "Role is required"
+    ]
+];
 
 $getJobSeekerDetailsSchema = [
     "email" => [

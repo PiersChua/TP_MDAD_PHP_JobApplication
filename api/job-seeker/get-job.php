@@ -24,7 +24,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         /**
          * First inner join links jobs to user who created them
          * Second inner join links users to their respective agencies

@@ -61,7 +61,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Job Seeker'");
         $findExistingUserStmt->bind_param("s", $userId);
         $findExistingUserStmt->execute();

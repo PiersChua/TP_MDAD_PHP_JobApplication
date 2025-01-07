@@ -20,7 +20,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findAgenciesStmt = $db->getConnection()->prepare("
         SELECT agencies.agencyId,agencies.userId,agencies.name,agencies.email,agencies.phoneNumber, COUNT(agents.agencyId) as agent_count, manager.fullName as user_full_name from agencies
         LEFT JOIN users AS agents ON agencies.agencyId = agents.agencyId

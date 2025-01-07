@@ -19,7 +19,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         if (isset($_GET["query"]) && !empty($_GET["query"])) {
             $searchQuery = "%" . strtolower($_GET["query"]) . "%";
             $findJobsStmt = $db->getConnection()->prepare("

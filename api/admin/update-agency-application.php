@@ -34,7 +34,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         // check the application exists, along with the Job Seeker who created the application
         $findExistingAgencyApplicationStmt = $db->getConnection()->prepare("
         SELECT agency_applications.*, 

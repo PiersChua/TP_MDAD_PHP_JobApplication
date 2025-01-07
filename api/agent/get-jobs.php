@@ -28,7 +28,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         if (isset($_GET["limit"]) && is_numeric($_GET["limit"])) {
             // extract the jobs based on the limit given
             $limit = $_GET["limit"];

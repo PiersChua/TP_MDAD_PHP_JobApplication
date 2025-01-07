@@ -27,7 +27,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findExistingJobStmt = $db->getConnection()->prepare("
             SELECT jobs.* FROM jobs
             WHERE jobs.jobId = ?

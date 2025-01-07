@@ -29,7 +29,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findExistingUserStmt = $db->getConnection()->prepare("
         SELECT users.userId, users.fullName, users.email from users
         WHERE users.email=? AND users.role='Job Seeker'");

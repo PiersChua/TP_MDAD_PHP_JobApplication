@@ -19,7 +19,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findFavouritesStmt = $db->getConnection()->prepare("
         SELECT jobs.*, agencies.name as agency_name FROM jobs
         INNER JOIN favourite_jobs ON jobs.jobId = favourite_jobs.jobId

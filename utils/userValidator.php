@@ -2,10 +2,10 @@
 
 class UserValidator
 {
-    public static function verifyIfUserExists($userId, mysqli|null $dbConnection)
+    public static function verifyIfUserExists($userId, $role, mysqli|null $dbConnection)
     {
-        $findUserStmt = $dbConnection->prepare("SELECT COUNT(*) FROM users WHERE userId=?");
-        $findUserStmt->bind_param("s", $userId);
+        $findUserStmt = $dbConnection->prepare("SELECT COUNT(*) FROM users WHERE userId=? AND role=?");
+        $findUserStmt->bind_param("ss", $userId, $role);
         $findUserStmt->execute();
         $findUserStmt->bind_result($userCount);
         $findUserStmt->fetch();

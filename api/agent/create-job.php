@@ -76,7 +76,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = DB::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findExistingUserStmt = $db->getConnection()->prepare("SELECT COUNT(*) from users WHERE userId=? AND role='Agent'");
         $findExistingUserStmt->bind_param("s", $agentUserId);
         $findExistingUserStmt->execute();
