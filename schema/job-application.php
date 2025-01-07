@@ -34,4 +34,10 @@ $getJobApplicationsSchema = [
         "message" => "AgentUserId is required",
     ],
 ];
+$getApplicantsSchema = [
+    "applicantUserId" => [
+        "required" => true,
+        "message" => "ApplicantUserId is required"
+    ]
+];
 $validStatuses = ['ACCEPTED', 'REJECTED'];

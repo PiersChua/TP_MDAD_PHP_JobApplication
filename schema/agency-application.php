@@ -29,4 +29,10 @@ $updateAgencyApplicationSchema = [
         "message" => "Status is required",
     ],
 ];
+$getApplicantsSchema = [
+    "agencyApplicationId" => [
+        "required" => true,
+        "message" => "AgencyApplicationId is required"
+    ]
+];
 $validStatuses = ['ACCEPTED', 'REJECTED'];
