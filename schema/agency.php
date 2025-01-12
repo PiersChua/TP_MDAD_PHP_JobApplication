@@ -30,3 +30,14 @@ $getAgencyDetailsSchema = [
         "message" => "AgencyAdminUserId is required"
     ]
 ];
+
+$removeImageSchema = [
+    "userId" => [
+        "required" => true,
+        "message" => "UserId is required"
+    ],
+    "agencyAdminUserId" => [
+        "required" => true,
+        "message" => "AgencyAdminUserId is required"
+    ]
+];

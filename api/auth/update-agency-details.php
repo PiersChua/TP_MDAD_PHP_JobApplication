@@ -57,7 +57,7 @@ Jwt::verifyPayloadWithUserId($payload, $userId);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
-        UserValidator::verifyIfUserExists($userId, $db->getConnection());
+        UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findDuplicateStmt = $db->getConnection()->prepare("
            SELECT 
             (SELECT COUNT(*) FROM users WHERE email = ?)

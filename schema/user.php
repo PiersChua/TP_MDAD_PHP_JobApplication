@@ -140,3 +140,10 @@ $deleteUserSchema = [
     ],
 
 ];
+
+$removeImageSchema = [
+    "userIdToBeUpdated" => [
+        "required" => true,
+        "message" => "UserIdToBeUpdated is required"
+    ]
+];

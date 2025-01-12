@@ -32,7 +32,7 @@ class Db
 
     public function getConnection()
     {
-        return $this->dbConnection ?  $this->dbConnection : null;
+        return $this->dbConnection ? $this->dbConnection : null;
     }
 
 
