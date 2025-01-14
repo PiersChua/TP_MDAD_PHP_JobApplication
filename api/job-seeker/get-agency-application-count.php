@@ -22,7 +22,7 @@ if ($db->getConnection()) {
         UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
         $findExistingAgencyApplicationStmt = $db->getConnection()->prepare("
         SELECT COUNT(*) FROM agency_applications
-        WHERE userId=? AND status='PENDING'
+        WHERE userId=? AND  status='PENDING'
         ");
         $findExistingAgencyApplicationStmt->bind_param("s", $userId);
         $findExistingAgencyApplicationStmt->execute();

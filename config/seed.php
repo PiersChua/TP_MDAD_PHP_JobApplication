@@ -8,16 +8,16 @@ INSERT INTO users (fullName, email, password, phoneNumber, dateOfBirth, role, ge
 VALUES
     ('Alice Tan', 'alice@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234567', '1990-01-01', 'Job Seeker', 'Female', 'Chinese', 'Singaporean'),
     ('Admin User', 'admin@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234568', '1985-06-15', 'Admin', 'Male', 'Others', 'Singaporean'),
-    ('Agency Admin 1', 'admin1@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234569', '1980-03-22', 'Agency Admin', 'Male', 'Indian', 'Singaporean'),
-    ('Agency Admin 2', 'admin2@agency2.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234570', '1990-05-14', 'Agency Admin', 'Female', 'Malay', 'Singaporean'),
-    ('Agency Admin 3', 'admin3@agency3.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234571', '1988-08-30', 'Agency Admin', 'Male', 'Chinese', 'PR'),
-    ('Agency Admin 4', 'admin4@agency4.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234572', '1979-11-20', 'Agency Admin', 'Female', 'Others', 'Singaporean'),
-    ('Agency Admin 5', 'admin5@agency5.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234573', '1993-03-10', 'Agency Admin', 'Male', 'Indian', 'PR'),
-    ('Agent 1', 'agent1@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234574', '1995-01-01', 'Agent', 'Male', 'Chinese', 'Singaporean'),
-    ('Agent 2', 'agent2@agency2.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234575', '1996-06-05', 'Agent', 'Female', 'Malay', 'PR'),
-    ('Agent 3', 'agent3@agency3.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234576', '1992-10-12', 'Agent', 'Male', 'Indian', 'Singaporean'),
-    ('Agent 4', 'agent4@agency4.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234577', '1989-03-25', 'Agent', 'Female', 'Others', 'Singaporean'),
-    ('Agent 5', 'agent5@agency5.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234578', '1987-09-15', 'Agent', 'Male', 'Chinese', 'PR');
+    ('Aaron Lim', 'admin1@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234569', '1980-03-22', 'Agency Admin', 'Male', 'Indian', 'Singaporean'),
+    ('Rachel Mohd', 'admin2@agency2.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234570', '1990-05-14', 'Agency Admin', 'Female', 'Malay', 'Singaporean'),
+    ('David Chen', 'admin3@agency3.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234571', '1988-08-30', 'Agency Admin', 'Male', 'Chinese', 'PR'),
+    ('Sara Lee', 'admin4@agency4.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234572', '1979-11-20', 'Agency Admin', 'Female', 'Others', 'Singaporean'),
+    ('Daniel Prasad', 'admin5@agency5.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234573', '1993-03-10', 'Agency Admin', 'Male', 'Indian', 'PR'),
+    ('Ethan Wong', 'agent1@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234574', '1995-01-01', 'Agent', 'Male', 'Chinese', 'Singaporean'),
+    ('Aisha Sulaiman', 'agent2@agency2.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234575', '1996-06-05', 'Agent', 'Female', 'Malay', 'PR'),
+    ('Arjun Kumar', 'agent3@agency3.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234576', '1992-10-12', 'Agent', 'Male', 'Indian', 'Singaporean'),
+    ('Mei Lin', 'agent4@agency4.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234577', '1989-03-25', 'Agent', 'Female', 'Others', 'Singaporean'),
+    ('Henry Tan', 'agent5@agency5.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234578', '1987-09-15', 'Agent', 'Male', 'Chinese', 'PR');
 
 INSERT INTO agencies (name, email, phoneNumber, address, userId)
 VALUES
