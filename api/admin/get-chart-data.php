@@ -45,7 +45,7 @@ if ($db->getConnection()) {
         SELECT agencies.name, COUNT(jobs.jobId) AS agency_job_count FROM agencies
         INNER JOIN users ON users.agencyId=agencies.agencyId
         INNER JOIN jobs ON jobs.userId=users.userId
-        GROUP BY agencies.name
+        GROUP BY agencies.agencyId
         ORDER BY agency_job_count DESC
         LIMIT 3
         ");

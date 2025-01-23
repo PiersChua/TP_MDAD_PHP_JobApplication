@@ -21,40 +21,23 @@ $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
         UserValidator::verifyIfUserExists($userId, $payload["role"], $db->getConnection());
-
-        $getAgentRaceProportionStmt = $db->getConnection()->prepare("
-        SELECT race, COUNT(*) as race_user_count FROM users
-        INNER JOIN agencies ON users.agencyId=agencies.agencyId
-        WHERE agencies.userId=?
-        GROUP BY RACE
-        ");
-        $getAgentRaceProportionStmt->bind_param("s", $userId);
-        $getAgentRaceProportionStmt->execute();
-        $raceResult = $getAgentRaceProportionStmt->get_result();
-        $getAgentRaceProportionStmt->close();
-        $agentRaceProportion = $raceResult->fetch_all(MYSQLI_ASSOC);
-
-        $getTop3AgentsWithMostJobsStmt = $db->getConnection()->prepare("
-        SELECT users.fullName, COUNT(jobs.jobId) as agent_job_count FROM users
-        INNER JOIN agencies ON users.agencyId=agencies.agencyId
-        INNER JOIN jobs on users.userId=jobs.userId
-        WHERE agencies.userId=?
-        GROUP BY users.userId
-        ORDER BY agent_job_count DESC
+        $getTop3FavouriteJobsStmt = $db->getConnection()->prepare("
+        SELECT jobs.position, COUNT(favourite_jobs.jobId) as favourite_job_count FROM jobs
+        INNER JOIN favourite_jobs ON jobs.jobId=favourite_jobs.jobId
+        GROUP BY jobs.jobId
+        ORDER BY favourite_job_count DESC
         LIMIT 3
         ");
-        $getTop3AgentsWithMostJobsStmt->bind_param("s", $userId);
-        $getTop3AgentsWithMostJobsStmt->execute();
-        $jobResult = $getTop3AgentsWithMostJobsStmt->get_result();
-        $getTop3AgentsWithMostJobsStmt->close();
-        $agentJobProportion = $jobResult->fetch_all(MYSQLI_ASSOC);
+        $getTop3FavouriteJobsStmt->execute();
+        $favouriteJobResult = $getTop3FavouriteJobsStmt->get_result();
+        $getTop3FavouriteJobsStmt->close();
+        $favouriteJobProportion = $favouriteJobResult->fetch_all(MYSQLI_ASSOC);
 
         $getJobApplicationStatusProportiontStmt = $db->getConnection()->prepare("
         SELECT status, COUNT(*) as job_application_count FROM job_applications
         INNER JOIN jobs ON jobs.jobId=job_applications.jobId
         INNER JOIN users on jobs.userId=users.userId
-        INNER JOIN agencies ON users.agencyId=agencies.agencyId
-        WHERE agencies.userId=?
+        WHERE jobs.userId=?
         GROUP BY status
         LIMIT 3
         ");
@@ -64,7 +47,19 @@ if ($db->getConnection()) {
         $getJobApplicationStatusProportiontStmt->close();
         $jobApplicationProportion = $jobApplicationResult->fetch_all(MYSQLI_ASSOC);
 
-        $data = array("race_data" => $agentRaceProportion, "job_data" => $agentJobProportion, "job_application_data" => $jobApplicationProportion);
+        $getTop3AppliedJobsStmt = $db->getConnection()->prepare("
+        SELECT jobs.position, COUNT(job_applications.jobId) as job_application_count FROM jobs
+        INNER JOIN job_applications ON jobs.jobId=job_applications.jobId
+        GROUP BY jobs.jobId
+        ORDER BY job_application_count DESC
+        LIMIT 3
+        ");
+        $getTop3AppliedJobsStmt->execute();
+        $jobResult = $getTop3AppliedJobsStmt->get_result();
+        $getTop3AppliedJobsStmt->close();
+        $jobProportion = $jobResult->fetch_all(MYSQLI_ASSOC);
+
+        $data = array("favourited_job_data" => $favouriteJobProportion, "job_application_data" => $jobApplicationProportion, "applied_job_data" => $jobProportion);
         echo json_encode($data);
     } catch (Exception $e) {
         http_response_code(500);
