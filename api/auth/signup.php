@@ -11,7 +11,7 @@ if ($result !== null) {
     echo json_encode(array("message" => $result));
     exit();
 }
-[$fullName, $email, $password, $phoneNumber, $role, $dateOfBirth, $gender, $race, $nationality] = [
+[$fullName, $email, $password, $phoneNumber, $role, $dateOfBirth, $gender, $race, $nationality, $otp] = [
     StringUtils::capitalizeName($_POST["fullName"]),
     StringUtils::lowercaseEmail($_POST["email"]),
     $_POST["password"],
@@ -21,6 +21,7 @@ if ($result !== null) {
     $_POST["gender"],
     $_POST["race"],
     $_POST["nationality"],
+    $_POST["otp"]
 ];
 $hashedPassword =
     password_hash($_POST["password"], PASSWORD_BCRYPT);
@@ -88,11 +89,22 @@ if ($db->getConnection()) {
             echo json_encode(array("message" => "Phone Number is already in use"));
             exit();
         }
-
         $createUserStmt = $db->getConnection()->prepare("INSERT INTO users (fullName, email, password, phoneNumber, role, dateOfBirth, gender, race, nationality) VALUES (?,?,?,?,?,?,?,?,?)");
         $createUserStmt->bind_param("sssssssss", $fullName, $email, $hashedPassword, $phoneNumber, $role, $dateOfBirth, $gender, $race, $nationality);
         $createUserStmt->execute();
         $createUserStmt->close();
+
+        $getCreatedUserStmt = $db->getConnection()->prepare("SELECT userId FROM users WHERE email=?");
+        $getCreatedUserStmt->bind_param("s", $email);
+        $getCreatedUserStmt->execute();
+        $getCreatedUserStmt->bind_result($userId);
+        $getCreatedUserStmt->fetch();
+        $getCreatedUserStmt->close();
+
+        $createOtpStmt = $db->getConnection()->prepare("INSERT INTO user_otps (userId,otp) VALUES (?,?)");
+        $createOtpStmt->bind_param("ss", $userId, $otp);
+        $createOtpStmt->execute();
+        $createOtpStmt->close();
         echo json_encode(array("message" => "User created"));
     } catch (Exception $e) {
         http_response_code(500);

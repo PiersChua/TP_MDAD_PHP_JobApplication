@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     phoneNumber VARCHAR(10) NOT NULL UNIQUE,
+    isVerified TINYINT(1) DEFAULT 0,
     dateOfBirth DATE,
     role ENUM('Job Seeker', 'Agent', 'Agency Admin', 'Admin') NOT NULL,
     gender ENUM('Male', 'Female'),
@@ -35,6 +36,15 @@ CREATE TABLE IF NOT EXISTS users (
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (userId),
     FOREIGN KEY (agencyId) REFERENCES agencies(agencyId) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS user_otps(
+    userId VARCHAR(36) NOT NULL,
+    otp VARCHAR(6) NOT NULL,
+    createdAt TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (userId, otp),
+    FOREIGN KEY (userId) REFERENCES users(userId) ON DELETE CASCADE
 );
 
 ALTER TABLE agencies 

@@ -38,7 +38,11 @@ $signUpSchema =    [
     ],
     "nationality" => [
         "required" => true,
-        "message" => "Nationaliy is required"
+        "message" => "Nationality is required"
+    ],
+    "otp" => [
+        "required" => true,
+        "message" => "OTP is required"
     ]
 ];
 
@@ -51,6 +55,10 @@ $loginSchema = [
         "required" => true,
         "message" => "Password is required"
     ],
+    "otp" => [
+        "required" => true,
+        "message" => "OTP is required"
+    ]
 ];
 
 $updateUserSchema = [
