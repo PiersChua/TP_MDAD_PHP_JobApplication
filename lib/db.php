@@ -12,6 +12,10 @@ class Db
         define('USERNAME', "root");
         define('PASSWORD', "");
         define('DATABASE', "job_application");
+        // define('HOSTNAME', "fdb1030.atspace.me");
+        // define('USERNAME', "4579443_jobapplication");
+        // define('PASSWORD', "![rp[kIB5AyH^*j_");
+        // define('DATABASE', "4579443_jobapplication");
 
         // Connect to the database
         $this->dbConnection = mysqli_connect(HOSTNAME, USERNAME, PASSWORD, DATABASE);

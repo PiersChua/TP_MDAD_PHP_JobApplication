@@ -8,11 +8,11 @@ INSERT INTO users (fullName, email, password, phoneNumber, dateOfBirth, role, ge
 VALUES
     ('Alice Tan', 'alice@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234567', '1990-01-01', 'Job Seeker', 'Female', 'Chinese', 'Singaporean'),
     ('Admin User', 'admin@example.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234568', '1985-06-15', 'Admin', 'Male', 'Others', 'Singaporean'),
-    ('Aaron Lim', 'admin1@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234569', '1980-03-22', 'Agency Admin', 'Male', 'Indian', 'Singaporean'),
-    ('Rachel Mohd', 'admin2@agency2.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234570', '1990-05-14', 'Agency Admin', 'Female', 'Malay', 'Singaporean'),
-    ('David Chen', 'admin3@agency3.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234571', '1988-08-30', 'Agency Admin', 'Male', 'Chinese', 'PR'),
-    ('Sara Lee', 'admin4@agency4.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234572', '1979-11-20', 'Agency Admin', 'Female', 'Others', 'Singaporean'),
-    ('Daniel Prasad', 'admin5@agency5.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234573', '1993-03-10', 'Agency Admin', 'Male', 'Indian', 'PR'),
+    ('Aaron Lim', 'admin@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234569', '1980-03-22', 'Agency Admin', 'Male', 'Indian', 'Singaporean'),
+    ('Rachel Mohd', 'admin@agency2.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234570', '1990-05-14', 'Agency Admin', 'Female', 'Malay', 'Singaporean'),
+    ('David Chen', 'admin@agency3.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234571', '1988-08-30', 'Agency Admin', 'Male', 'Chinese', 'PR'),
+    ('Sara Lee', 'admin@agency4.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234572', '1979-11-20', 'Agency Admin', 'Female', 'Others', 'Singaporean'),
+    ('Daniel Prasad', 'admin@agency5.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234573', '1993-03-10', 'Agency Admin', 'Male', 'Indian', 'PR'),
     ('Ethan Wong', 'agent1@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '81234574', '1995-01-01', 'Agent', 'Male', 'Chinese', 'Singaporean'),
     ('Emily Tan', 'agent2@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '91234567', '1990-07-15', 'Agent', 'Female', 'Chinese', 'Singaporean'),
     ('John Lee', 'agent3@agency1.com', '$2y$10$8EYQXM02gxCztFU0jdLQMOioBlJx3sobC70WetfxIjxNdgPPlxTEe', '83214578', '1985-11-30', 'Agent', 'Male', 'Malay', 'PR'),
@@ -25,11 +25,11 @@ VALUES
 
 INSERT INTO agencies (name, email, phoneNumber, address, userId)
 VALUES
-    ('Global Talent Agency', 'contact@globaltalent.sg', '68765432', '123 Orchard Road', (SELECT userId FROM users WHERE email = 'admin1@agency1.com')),
-    ('Premier Recruitment SG', 'contact@premierrecruitment.sg', '68765433', '456 Marina Bay', (SELECT userId FROM users WHERE email = 'admin2@agency2.com')),
-    ('Elite Workforce Solutions', 'contact@eliteworkforce.sg', '68765434', '789 Tanjong Pagar', (SELECT userId FROM users WHERE email = 'admin3@agency3.com')),
-    ('Strategic Hiring Partners', 'contact@strategichiring.sg', '68765435', '321 Raffles Place', (SELECT userId FROM users WHERE email = 'admin4@agency4.com')),
-    ('Nationwide Staffing', 'contact@nationwidestaffing.sg', '68765436', '654 Bukit Timah', (SELECT userId FROM users WHERE email = 'admin5@agency5.com'));
+    ('Global Talent Agency', 'contact@globaltalent.sg', '68765432', '123 Orchard Road', (SELECT userId FROM users WHERE email = 'admin@agency1.com')),
+    ('Premier Recruitment SG', 'contact@premierrecruitment.sg', '68765433', '456 Marina Bay', (SELECT userId FROM users WHERE email = 'admin@agency2.com')),
+    ('Elite Workforce Solutions', 'contact@eliteworkforce.sg', '68765434', '789 Tanjong Pagar', (SELECT userId FROM users WHERE email = 'admin@agency3.com')),
+    ('Strategic Hiring Partners', 'contact@strategichiring.sg', '68765435', '321 Raffles Place', (SELECT userId FROM users WHERE email = 'admin@agency4.com')),
+    ('Nationwide Staffing', 'contact@nationwidestaffing.sg', '68765436', '654 Bukit Timah', (SELECT userId FROM users WHERE email = 'admin@agency5.com'));
 
 UPDATE users
 SET agencyId = (SELECT agencyId FROM agencies WHERE name = 'Global Talent Agency') WHERE email = 'agent1@agency1.com' OR email = 'agent2@agency1.com' OR email = 'agent3@agency1.com' OR email = 'agent4@agency1.com' OR email = 'agent5@agency1.com';
