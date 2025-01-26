@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../../schema/user-otp.php";
+require_once __DIR__ . "/../../schema/verification-otp.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/jwt.php";
@@ -27,7 +27,7 @@ if ($db->getConnection()) {
         }
         $findExistingUserStmt->close();
 
-        $findExistingOtpStmt = $db->getConnection()->prepare("SELECT * FROM user_otps WHERE userId=?");
+        $findExistingOtpStmt = $db->getConnection()->prepare("SELECT * FROM verification_otps WHERE userId=?");
         $findExistingOtpStmt->bind_param("s", $userId);
         $findExistingOtpStmt->execute();
         $otpResult = $findExistingOtpStmt->get_result();
@@ -43,11 +43,19 @@ if ($db->getConnection()) {
             echo json_encode(array("message" => "OTP is incorrect. Please try again"));
             exit();
         }
-        $deleteOtpStmt = $db->getConnection()->prepare("DELETE FROM user_otps WHERE userId=?");
+        $otpCreatedAtTime = new DateTime($userOtp["createdAt"], new DateTimeZone('Asia/Singapore'));
+        $currentTime = new DateTime();
+        $timeDifference = $currentTime->getTimestamp() - $otpCreatedAtTime->getTimestamp();
+        if ($timeDifference > 3600) {
+            http_response_code(400);
+            echo json_encode(array("message" => "OTP has expired, please request a new one"));
+            exit();
+        }
+        $deleteOtpStmt = $db->getConnection()->prepare("DELETE FROM verification_otps WHERE userId=?");
         $deleteOtpStmt->bind_param("s", $userId);
         $deleteOtpStmt->execute();
         $deleteOtpStmt->close();
-        $updateUserStmt = $db->getConnection()->prepare("UPDATE USERS SET isVerified = 1 WHERE userId=?");
+        $updateUserStmt = $db->getConnection()->prepare("UPDATE users SET isVerified = 1 WHERE userId=?");
         $updateUserStmt->bind_param("s", $userId);
         $updateUserStmt->execute();
         $updateUserStmt->close();

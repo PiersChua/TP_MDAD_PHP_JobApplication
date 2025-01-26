@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../../utils/validation.php";
-require_once __DIR__ . "/../../schema/user-otp.php";
+require_once __DIR__ . "/../../schema/password-reset-otp.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/stringUtils.php";
 
@@ -28,7 +28,7 @@ if ($db->getConnection()) {
             exit();
         }
         $findExistingUserStmt->close();
-        $getOtpStmt = $db->getConnection()->prepare("SELECT createdAt FROM user_otps WHERE userId = ?");
+        $getOtpStmt = $db->getConnection()->prepare("SELECT createdAt FROM password_reset_otps WHERE userId = ?");
         $getOtpStmt->bind_param("s", $userId);
         $getOtpStmt->execute();
         $getOtpStmt->bind_result($otpCreatedAt);
@@ -44,13 +44,13 @@ if ($db->getConnection()) {
                 echo json_encode(array("message" => "You have requested too many times. Please wait for $timeRemaining s before continuing"));
                 exit();
             }
-            $deleteOtpStmt = $db->getConnection()->prepare("DELETE FROM user_otps WHERE userId = ?");
+            $deleteOtpStmt = $db->getConnection()->prepare("DELETE FROM password_reset_otps WHERE userId = ?");
             $deleteOtpStmt->bind_param("s", $userId);
             $deleteOtpStmt->execute();
             $deleteOtpStmt->close();
         }
 
-        $createOtpStmt = $db->getConnection()->prepare("INSERT INTO user_otps (userId,otp) VALUES (?,?)");
+        $createOtpStmt = $db->getConnection()->prepare("INSERT INTO password_reset_otps (userId,otp) VALUES (?,?)");
         $createOtpStmt->bind_param("ss", $userId, $otp);
         $createOtpStmt->execute();
         $createOtpStmt->close();

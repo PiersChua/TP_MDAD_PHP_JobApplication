@@ -34,7 +34,7 @@ if ($db->getConnection()) {
             exit();
         }
         if (!$isVerified) {
-            $getOtpStmt = $db->getConnection()->prepare("SELECT createdAt FROM user_otps WHERE userId = ?");
+            $getOtpStmt = $db->getConnection()->prepare("SELECT createdAt FROM verification_otps WHERE userId = ?");
             $getOtpStmt->bind_param("s", $userId);
             $getOtpStmt->execute();
             $getOtpStmt->bind_result($otpCreatedAt);
@@ -50,13 +50,13 @@ if ($db->getConnection()) {
                     echo json_encode(array("message" => "You have logged in too many times. Please wait for $timeRemaining s before continuing"));
                     exit();
                 }
-                $deleteOtpStmt = $db->getConnection()->prepare("DELETE FROM user_otps WHERE userId = ?");
+                $deleteOtpStmt = $db->getConnection()->prepare("DELETE FROM verification_otps WHERE userId = ?");
                 $deleteOtpStmt->bind_param("s", $userId);
                 $deleteOtpStmt->execute();
                 $deleteOtpStmt->close();
             }
 
-            $createOtpStmt = $db->getConnection()->prepare("INSERT INTO user_otps (userId,otp) VALUES (?,?)");
+            $createOtpStmt = $db->getConnection()->prepare("INSERT INTO verification_otps (userId,otp) VALUES (?,?)");
             $createOtpStmt->bind_param("ss", $userId, $otp);
             $createOtpStmt->execute();
             $createOtpStmt->close();

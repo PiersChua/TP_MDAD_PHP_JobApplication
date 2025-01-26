@@ -101,7 +101,7 @@ if ($db->getConnection()) {
         $getCreatedUserStmt->fetch();
         $getCreatedUserStmt->close();
 
-        $createOtpStmt = $db->getConnection()->prepare("INSERT INTO user_otps (userId,otp) VALUES (?,?)");
+        $createOtpStmt = $db->getConnection()->prepare("INSERT INTO verification_otps (userId,otp) VALUES (?,?)");
         $createOtpStmt->bind_param("ss", $userId, $otp);
         $createOtpStmt->execute();
         $createOtpStmt->close();

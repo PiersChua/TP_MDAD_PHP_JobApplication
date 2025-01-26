@@ -155,3 +155,13 @@ $removeImageSchema = [
         "message" => "UserIdToBeUpdated is required"
     ]
 ];
+$updatePasswordSchema = [
+    "email" => [
+        "required" => true,
+        "message" => "Email is required"
+    ],
+    "password" => [
+        "required" => true,
+        "message" => "Password is required"
+    ],
+];
