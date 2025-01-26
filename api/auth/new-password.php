@@ -3,9 +3,10 @@ require_once __DIR__ . "/../../schema/user.php";
 require_once __DIR__ . "/../../utils/validation.php";
 require_once __DIR__ . "/../../lib/db.php";
 require_once __DIR__ . "/../../utils/stringUtils.php";
+require_once __DIR__ . "/../../utils/jwt.php";
 
 
-$result = Validation::validateSchema($_POST, $updatePasswordSchema);
+$result = Validation::validateSchema($_POST, $newPasswordSchema);
 if ($result !== null) {
     http_response_code(400);
     echo json_encode(array("message" => $result));
@@ -13,7 +14,7 @@ if ($result !== null) {
 }
 [$email, $password] = [StringUtils::lowercaseEmail($_POST["email"]), $_POST["password"]];
 $hashedPassword =
-    password_hash($_POST["password"], PASSWORD_BCRYPT);
+    password_hash($password, PASSWORD_BCRYPT);
 $db = Db::getInstance();
 if ($db->getConnection()) {
     try {
